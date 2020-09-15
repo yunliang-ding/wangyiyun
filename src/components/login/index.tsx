@@ -13,8 +13,8 @@ const Login = ({ onClose, dispatch }: any) => {
       password,
       loginWay,
     });
-    const { playlist } = await User.queryUserPlayList(profile.userId);
     if (code === 200) {
+      const { playlist } = await User.queryUserPlayList(profile.userId);
       onClose();
       localStorage.setItem(
         'userInfo',

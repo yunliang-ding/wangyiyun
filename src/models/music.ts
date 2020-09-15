@@ -1,7 +1,32 @@
+const musicCache = JSON.parse(localStorage.getItem('music') || '[]');
 export default {
   namespace: 'music',
   state: {
-    musicEntity: {},
+    musicEntity: {
+      musicCache, // 播放磁盘
+      currentMusic: JSON.parse(
+        localStorage.getItem('currentMusic') ||
+          JSON.stringify({
+            id: '',
+            url: 'http://',
+            name: '',
+            artists: '',
+            duration: '',
+            image: '',
+            lyric: '',
+            tlyric: '',
+            progress: 0,
+            playing: false,
+            comment: [],
+          }),
+      ),
+      searchArray: [],
+      recordArray: [],
+      recommendArray: [],
+      likelistArray: [],
+      simiArray: [],
+      playlistArray: [],
+    },
   },
   effects: {},
   reducers: {

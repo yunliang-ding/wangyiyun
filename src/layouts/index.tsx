@@ -6,12 +6,7 @@ import { User } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
-const AppLayout = ({
-  userEntity = {},
-  musicEntity = {},
-  dispatch,
-  children,
-}: any) => {
+const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   const { avatarUrl, nickname, userId } = userEntity;
   const [collapsed, setcollapsed]: any = useState();
   const [theme, settheme]: any = useState(
@@ -171,12 +166,6 @@ const AppLayout = ({
         </Layout>
       </div>
       {openlogin && <Login onClose={setopenlogin.bind(null, false)} />}
-      <video
-        style={{ width: 0, height: 0 }}
-        src={musicEntity.currentMusic && musicEntity.currentMusic.src}
-        autoPlay={true}
-        id="vedio"
-      />
     </>
   );
 };

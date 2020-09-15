@@ -2,6 +2,7 @@
  * 歌曲相关
  */
 import { get } from '@/axios';
+const musicCache = JSON.parse(localStorage.getItem('music') || '[]');
 export default {
   // 推荐歌曲
   async recommend() {
@@ -15,11 +16,10 @@ export default {
     artists: string,
   ): Promise<any> {
     // 1:先去磁盘查找
-    let song: any = false;
+    let song: any = musicCache.find((item: any) => {
+      return item.id === id;
+    });
     let music: any = {};
-    // this.musicsCache.find(_item => {
-    //   return _item.id === id
-    // })
     if (song) {
       music.playing = true;
       if (song.lyric === '') {
@@ -70,10 +70,11 @@ export default {
           comment: [],
           album: detail.songs[0].al,
         };
-        // this.musicsCache.push(this.music)
-        // localStorage.setItem('music', JSON.stringify(toJS(this.musicsCache)))
+        musicCache.push(music);
+        localStorage.setItem('music', JSON.stringify(musicCache));
       }
     }
+    localStorage.setItem('currentMusic', JSON.stringify(music));
     return music;
   },
 };

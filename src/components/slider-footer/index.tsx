@@ -8,16 +8,58 @@ const message = new Message({
   duration: 3,
 });
 const $: any = document.querySelector.bind(document);
-const SliderFooter = (props: any) => {
+const SliderFooter = ({
+  musicEntity: { currentMusic, musicCache },
+  dispatch,
+}: any) => {
   const { duration, playing, progress, src, image, artists, name } =
-    props.musicEntity.currentMusic || {};
-  Window.music = props.musicEntity.currentMusic;
+    currentMusic || {};
+  Window.music = currentMusic;
   const setProgress = (progress?: any) => {
     Window.music.progress = progress;
-    props.dispatch({
+    dispatch({
       type: 'music/update',
       payload: {
         currentMusic: Window.music,
+      },
+    });
+  };
+  const setPlaying = (playing: boolean) => {
+    Window.music.playing = playing;
+    dispatch({
+      type: 'music/update',
+      payload: {
+        currentMusic: Window.music,
+      },
+    });
+    playing ? $('#vedio').play() : $('#vedio').pause();
+  };
+  const playerBefore = () => {
+    let index = musicCache.findIndex((item: any) => {
+      return item.id === currentMusic.id;
+    });
+    const music = musicCache[index > 0 ? index - 1 : 0];
+    localStorage.setItem('currentMusic', JSON.stringify(music));
+    dispatch({
+      type: 'music/update',
+      payload: {
+        currentMusic: music,
+      },
+    });
+  };
+  const playerNext = () => {
+    let index = musicCache.findIndex((item: any) => {
+      return item.id === currentMusic.id;
+    });
+    const music =
+      musicCache[
+        index < musicCache.length - 1 ? index + 1 : musicCache.length - 1
+      ];
+    localStorage.setItem('currentMusic', JSON.stringify(music));
+    dispatch({
+      type: 'music/update',
+      payload: {
+        currentMusic: music,
       },
     });
   };
@@ -27,7 +69,7 @@ const SliderFooter = (props: any) => {
         setProgress(e.target.currentTime * 1000);
       };
       $('#vedio').onended = () => {
-        // Music.playerNext()
+        playerNext();
       };
       $('#vedio').onerror = () => {
         src !== undefined && message.warning('暂无版权!');
@@ -37,16 +79,18 @@ const SliderFooter = (props: any) => {
   return (
     <>
       <div className="app-footer-slider">
-        <Slider
-          value={(progress / duration) * 100}
-          tooltipVisible={null}
-          style={{ width: '100%' }}
-          onChange={(e: any) => {
-            $('#vedio').currentTime = (duration * e) / 100 / 1000;
-            playing ? $('#vedio').play() : $('#vedio').pause();
-            setProgress((duration * e) / 100);
-          }}
-        />
+        {src && (
+          <Slider
+            value={(progress / duration) * 100}
+            tooltipVisible={null}
+            style={{ width: '100%' }}
+            onChange={(e: any) => {
+              $('#vedio').currentTime = (duration * e) / 100 / 1000;
+              playing ? $('#vedio').play() : $('#vedio').pause();
+              setProgress((duration * e) / 100);
+            }}
+          />
+        )}
         <div className="app-footer-box">
           <div
             className="music-tools"
@@ -122,9 +166,7 @@ const SliderFooter = (props: any) => {
             <i
               style={{ fontSize: 16 }}
               className="iconfont icon-shangyishou1"
-              onClick={() => {
-                // playerBefore()
-              }}
+              onClick={playerBefore}
             ></i>
             <i
               style={{ fontSize: 32 }}
@@ -133,16 +175,12 @@ const SliderFooter = (props: any) => {
                   ? 'iconfont icon-zanting2'
                   : 'iconfont icon-video-control'
               }
-              onClick={() => {
-                // this.props.Music.setPlaying(!playing)
-              }}
+              onClick={setPlaying.bind(null, !playing)}
             ></i>
             <i
               style={{ fontSize: 16 }}
               className="iconfont icon-xiayishou1"
-              onClick={() => {
-                // playerNext()
-              }}
+              onClick={playerNext}
             ></i>
           </div>
           <div
@@ -161,11 +199,12 @@ const SliderFooter = (props: any) => {
                 // setPlyerRecord(!plyerRecord)
               }}
             >
-              <Badge count={20} />
+              <Badge count={musicCache.length} />
             </i>
           </div>
         </div>
       </div>
+      <video style={{ display: 'none' }} src={src} autoPlay id="vedio" />
     </>
   );
 };

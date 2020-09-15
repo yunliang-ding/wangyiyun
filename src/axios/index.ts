@@ -33,7 +33,7 @@ const get = async (url: string, params: any): Promise<any> => {
         console.log(e);
       }
     } else if (response.data.code !== 200) {
-      message.error(response.data.msg);
+      message.error(response.data.msg || '接口异常');
     }
     return response.data;
   } catch (err) {

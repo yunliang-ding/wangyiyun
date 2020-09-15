@@ -13,6 +13,12 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       const { height } = tableRef.current.getBoundingClientRect();
       setheight(height);
     }
+    window.addEventListener('resize', () => {
+      if (tableRef.current) {
+        const { height } = tableRef.current.getBoundingClientRect();
+        setheight(height);
+      }
+    });
   }, []);
   /** 查询推荐 */
   const query = async () => {
@@ -45,6 +51,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       type: 'music/update',
       payload: {
         currentMusic: music,
+        musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
       },
     });
   };
@@ -137,7 +144,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       },
     },
     {
-      title: '操作',
+      title: '',
       dataIndex: 'opeartion',
       key: 'opeartion',
       fixed: 'right',
@@ -154,18 +161,18 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
             <Tooltip title="添加到喜欢" placement="bottom">
               <Icon
                 type="iconfont icon-xihuan1"
-                color="#666"
+                size={14}
                 style={{ cursor: 'pointer', opacity: 0.8 }}
               />
             </Tooltip>
             <Icon
               type="iconfont icon-shoucang"
-              color="#666"
+              size={14}
               style={{ cursor: 'pointer', opacity: 0.8 }}
             />
             <Icon
               type="iconfont icon-xiazai1"
-              color="#666"
+              size={14}
               style={{ cursor: 'pointer', opacity: 0.8 }}
             />
           </div>
