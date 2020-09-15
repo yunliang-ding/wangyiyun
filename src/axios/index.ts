@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Message } from 'site-ui';
 import { User } from '@/service';
+import { Message } from 'site-ui';
 const message = new Message({
   duration: 3,
 });

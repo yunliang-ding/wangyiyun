@@ -8,6 +8,7 @@ export default {
     update(state: any, { payload }: any) {
       let { musicEntity } = state;
       musicEntity = {
+        ...musicEntity,
         ...payload,
       };
       return {

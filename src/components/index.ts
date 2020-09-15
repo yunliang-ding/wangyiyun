@@ -1,2 +1,3 @@
 import Login from './login';
-export { Login };
+import SliderFooter from './slider-footer';
+export { Login, SliderFooter };

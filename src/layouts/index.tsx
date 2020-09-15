@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import { Layout, Menu, Icon, Input, Tooltip } from 'site-ui';
-import { Login } from '@/components';
+import { Login, SliderFooter } from '@/components';
 import { User } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
@@ -137,7 +137,9 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
             <Content>
               <div className="main">{children}</div>
             </Content>
-            <Footer>music @2020</Footer>
+            <Footer>
+              <SliderFooter />
+            </Footer>
           </Layout>
         </Layout>
       </div>

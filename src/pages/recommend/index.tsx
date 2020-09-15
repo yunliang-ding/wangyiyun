@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon } from 'site-ui';
+import { Table, Icon, Tooltip } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
+import './index.less';
 const Recommend = ({ musicEntity = {}, dispatch }: any) => {
   const [loading, setloading] = useState(false);
   const [height, setheight] = useState(false);
@@ -13,6 +14,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       setheight(height);
     }
   }, []);
+  /** 查询推荐 */
   const query = async () => {
     setloading(true);
     const { code, recommend } = await Music.recommend();
@@ -21,18 +23,30 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       dispatch({
         type: 'music/update',
         payload: {
-          recommend: {
-            data:
-              recommend.map((item: any, index: number) => {
-                item.sort = index + 1;
-                item.artists = item.artists[0].name;
-                item.image = item.album.picUrl;
-                return item;
-              }) || [],
-            count: recommend.length,
-          },
+          recommend:
+            recommend.map((item: any, index: number) => {
+              item.sort = index + 1;
+              item.artists = item.artists[0].name;
+              item.image = item.album.picUrl;
+              return item;
+            }) || [],
         },
       });
+  };
+  /** 播放歌曲 */
+  const setCurrentMusic = async (currentMusic: any) => {
+    const music = await Music.queryMusicById(
+      currentMusic.id,
+      currentMusic.name,
+      currentMusic.duration,
+      currentMusic.artists,
+    );
+    dispatch({
+      type: 'music/update',
+      payload: {
+        currentMusic: music,
+      },
+    });
   };
   const columns = [
     {
@@ -47,9 +61,35 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       dataIndex: 'play',
       key: 'play',
       width: 100,
-      render: (e: any) => {
+      render: (e: any, record: any) => {
+        let playing =
+          musicEntity.currentMusic && musicEntity.currentMusic.id === record.id;
         return (
-          <Icon type="iconfont icon-bofang" style={{ cursor: 'pointer' }} />
+          <Icon
+            type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setCurrentMusic(record);
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: '',
+      dataIndex: 'image',
+      key: 'image',
+      width: 50,
+      render: (e: any, record: any) => {
+        return (
+          <img
+            src={record.image + '?param=30y30'}
+            style={{
+              borderRadius: 4,
+              width: 30,
+              height: 30,
+            }}
+          ></img>
         );
       },
     },
@@ -111,9 +151,23 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
               width: '100%',
             }}
           >
-            <Icon type="iconfont icon-xihuan1" />
-            <Icon type="iconfont icon-shoucang" />
-            <Icon type="iconfont icon-xiazai1" />
+            <Tooltip title="添加到喜欢" placement="bottom">
+              <Icon
+                type="iconfont icon-xihuan1"
+                color="#666"
+                style={{ cursor: 'pointer', opacity: 0.8 }}
+              />
+            </Tooltip>
+            <Icon
+              type="iconfont icon-shoucang"
+              color="#666"
+              style={{ cursor: 'pointer', opacity: 0.8 }}
+            />
+            <Icon
+              type="iconfont icon-xiazai1"
+              color="#666"
+              style={{ cursor: 'pointer', opacity: 0.8 }}
+            />
           </div>
         );
       },
@@ -132,7 +186,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         checkable={false}
         pagination={false}
         loading={loading}
-        dataSource={musicEntity.recommend && musicEntity.recommend.data}
+        dataSource={musicEntity.recommend}
         columns={columns}
         style={{ height }}
       />
