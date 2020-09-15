@@ -21,6 +21,7 @@ const AppLayout = ({
   const logOut = async () => {
     const { code } = await User.logOut({});
     if (code === 200) {
+      localStorage.removeItem('userInfo');
       dispatch({
         type: 'user/update',
         payload: {},

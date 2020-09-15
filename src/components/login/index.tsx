@@ -18,7 +18,7 @@ const Login = ({ onClose, dispatch }: any) => {
       onClose();
       localStorage.setItem(
         'userInfo',
-        JSON.stringify({ ...profile, playlist }),
+        JSON.stringify({ ...profile, playlist, loginWay, username, password }),
       );
       dispatch({
         type: 'user/update',
