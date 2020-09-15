@@ -1,2 +1,3 @@
 import User from './user';
-export { User };
+import Music from './music';
+export { User, Music };

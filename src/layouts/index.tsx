@@ -6,7 +6,7 @@ import { User } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
-const AppLayout = ({ userEntity = {}, dispatch }: any) => {
+const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   const { avatarUrl, nickname, userId } = userEntity;
   const [collapsed, setcollapsed]: any = useState();
   const [theme, settheme]: any = useState('dark');
@@ -135,7 +135,7 @@ const AppLayout = ({ userEntity = {}, dispatch }: any) => {
               </div>
             </Header>
             <Content>
-              <div className="main">Content</div>
+              <div className="main">{children}</div>
             </Content>
             <Footer>music @2020</Footer>
           </Layout>
@@ -146,4 +146,3 @@ const AppLayout = ({ userEntity = {}, dispatch }: any) => {
   );
 };
 export default connect(({ user }: any) => ({ ...user }))(AppLayout);
-//
