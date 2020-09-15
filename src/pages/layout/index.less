@@ -1,5 +1,5 @@
 .app-layout {
-  height: 800px;
+  height: 100%;
   width: 100%;
   background-color: #eee;
 }
@@ -64,7 +64,8 @@
 }
 .app-layout-header-left {
   width: calc(100% - 80px);
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
   .sui-input {
     border-radius: 0;
     border: 0;
@@ -72,5 +73,21 @@
 }
 .app-layout-header-right {
   width: 80px;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+}
+.icon-tuijian {
+  font-size: 20px !important;
+}
+.icon-history {
+  font-size: 20px !important;
+}
+.suiconpassword-visible {
+  font-size: 20px !important;
+}
+.user {
+  img {
+    width: 40px;
+    border-radius: 50%;
+  }
 }

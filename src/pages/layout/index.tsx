@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Dropdown, Icon, Input } from 'site-ui';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'dva';
+import { Layout, Menu, Icon, Input, Tooltip } from 'site-ui';
+import { Login } from '@/components';
+import { User } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
-export default () => {
+const AppLayout = ({ userEntity = {}, dispatch }: any) => {
+  const { avatarUrl, nickname, userId } = userEntity;
   const [collapsed, setcollapsed]: any = useState();
   const [theme, settheme]: any = useState('dark');
+  const [openlogin, setopenlogin]: any = useState(false);
+  const logOut = async () => {
+    const { code } = await User.logOut({});
+    if (code === 200) {
+      dispatch({
+        type: 'user/update',
+        payload: {},
+      });
+    }
+  };
+  useEffect(() => {}, []);
   return (
     <>
       <div
@@ -24,7 +39,7 @@ export default () => {
               {collapsed ? (
                 <i className="iconfont icon-wangyiyunyinle"></i>
               ) : (
-                <span>我的网易云音乐</span>
+                <span>云音乐</span>
               )}
             </div>
             <Menu
@@ -34,38 +49,36 @@ export default () => {
               menuClick={(openkey: any, selectKey: any) => {
                 console.log(openkey, selectKey);
               }}
-              openKey={['1']}
-              selectKey={['1-2']}
+              openKey={['3']}
+              selectKey={['3-1']}
             >
-              <SubMenu key="1" icon="icon-yonghu" title="我的音乐">
-                <Item key="1-1" icon="suiconmessage">
+              <Item key="1" icon="suiconpassword-visible">
+                发现音乐
+              </Item>
+              <Item key="2" icon="iconfont icon-shipin1">
+                视频
+              </Item>
+              <SubMenu key="3" icon="iconfont icon-yonghu" title="我的音乐">
+                <Item key="3-1" icon="iconfont icon-tuijian">
                   每日推荐
                 </Item>
-                <Item key="1-2" icon="suiconmessage">
+                <Item key="3-2" icon="iconfont icon-history">
                   播放记录
                 </Item>
-                <Item key="1-3" icon="suiconmessage">
+                <Item key="3-3" icon="iconfont icon-xihuan">
                   喜欢的歌
                 </Item>
               </SubMenu>
-              <SubMenu key="2" icon="suiconhezi" title="Navigation Two">
-                <Item key="2-1">Option 1</Item>
-                <SubMenu key="2-2" title="Option 2">
-                  <Item key="2-2-1" icon="suiconempty">
-                    Option 1
-                  </Item>
-                  <Item key="2-2-2">Option 2</Item>
-                </SubMenu>
+              <SubMenu key="4" icon="suiconhezi" title="创建的歌单">
+                <Item key="4-1">Option 1</Item>
               </SubMenu>
-              <SubMenu key="3" icon="suiconjiaohu" title="Navigation Three">
-                <Item key="3-1">Option 1</Item>
-              </SubMenu>
+
               <SubMenu
-                key="4"
+                key="5"
                 icon="suiconicon_yingyongguanli"
-                title="Navigation Four"
+                title="收藏的歌单"
               >
-                <Item key="4-1" icon="suiconcloud-form">
+                <Item key="5-1" icon="suiconcloud-form">
                   Option 1
                 </Item>
               </SubMenu>
@@ -80,35 +93,57 @@ export default () => {
                 />
               </div>
               <div className="app-layout-header-right">
-                <Dropdown
-                  overlay={
-                    <>
-                      {['@site-ui', 'logout'].map(item => {
-                        return (
-                          <p key={item} style={{ fontSize: 12, padding: 4 }}>
-                            {item}
+                <div className="user">
+                  {userId ? (
+                    <Tooltip
+                      placement="bottom"
+                      title={
+                        <div>
+                          <p
+                            style={{
+                              fontSize: 12,
+                              margin: 0,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {nickname}
                           </p>
-                        );
-                      })}
-                    </>
-                  }
-                >
-                  <div className="user">
-                    <i
-                      className="iconfont icon-palette"
-                      style={{ fontSize: 20 }}
+                          <br />
+                          <p
+                            style={{
+                              fontSize: 12,
+                              margin: 0,
+                              cursor: 'pointer',
+                            }}
+                            onClick={logOut}
+                          >
+                            退出
+                          </p>
+                        </div>
+                      }
+                    >
+                      <img src={avatarUrl} />
+                    </Tooltip>
+                  ) : (
+                    <Icon
+                      type="suiconuser"
+                      size={20}
+                      onClick={setopenlogin.bind(null, true)}
                     />
-                  </div>
-                </Dropdown>
+                  )}
+                </div>
               </div>
             </Header>
             <Content>
               <div className="main">Content</div>
             </Content>
-            <Footer>music @2020 created by yunliang-ding</Footer>
+            <Footer>music @2020</Footer>
           </Layout>
         </Layout>
       </div>
+      {openlogin && <Login onClose={setopenlogin.bind(null, false)} />}
     </>
   );
 };
+export default connect(({ user }: any) => ({ ...user }))(AppLayout);
+//
