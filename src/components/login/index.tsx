@@ -13,11 +13,16 @@ const Login = ({ onClose, dispatch }: any) => {
       password,
       loginWay,
     });
+    const { playlist } = await User.queryUserPlayList(profile.userId);
     if (code === 200) {
       onClose();
+      localStorage.setItem(
+        'userInfo',
+        JSON.stringify({ ...profile, playlist }),
+      );
       dispatch({
         type: 'user/update',
-        payload: profile,
+        payload: { ...profile, playlist },
       });
     }
   };
@@ -62,7 +67,7 @@ const Login = ({ onClose, dispatch }: any) => {
           />
         </div>
         <Input
-          placeholder="邮箱"
+          placeholder={loginWay === 1 ? '邮箱' : '手机号'}
           value={username}
           onChange={(e: any) => {
             setusername(e.target.value);

@@ -26,4 +26,10 @@ export default {
   async signin() {
     return get('/api/daily_signin', {});
   },
+  // 登录
+  async queryUserPlayList(uid: string) {
+    return get(`/api/user/playlist?&timestamp=${new Date().getTime()}`, {
+      uid,
+    });
+  },
 };

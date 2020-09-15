@@ -24,7 +24,7 @@ const get = async (url: string, params: any): Promise<any> => {
           message.error('需要登录!');
         } else {
           const { username, password, loginWay } = JSON.parse(
-            localStorage.getItem('userInfo') || '',
+            localStorage.getItem('userInfo') || '{}',
           );
           await User.login({ username, password, loginWay });
           return await get(url, params); // 继续发送

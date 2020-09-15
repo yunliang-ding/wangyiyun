@@ -6,10 +6,17 @@ import { User } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
-const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
+const AppLayout = ({
+  userEntity = {},
+  musicEntity = {},
+  dispatch,
+  children,
+}: any) => {
   const { avatarUrl, nickname, userId } = userEntity;
   const [collapsed, setcollapsed]: any = useState();
-  const [theme, settheme]: any = useState('dark');
+  const [theme, settheme]: any = useState(
+    new Date().getHours() > 18 || new Date().getHours() < 6 ? 'dark' : 'light',
+  );
   const [openlogin, setopenlogin]: any = useState(false);
   const logOut = async () => {
     const { code } = await User.logOut({});
@@ -20,7 +27,11 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
       });
     }
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setInterval(() => {
+      settheme(new Date().getHours() > 18 ? 'dark' : 'light'); // 更新主题定时器
+    }, 60 * 1000);
+  }, []);
   return (
     <>
       <div
@@ -30,7 +41,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
       >
         <Layout>
           <Sider
-            width={260}
+            width={240}
             theme={theme}
             collapsible
             onCollapse={setcollapsed.bind(null, !collapsed)}
@@ -70,17 +81,32 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
                 </Item>
               </SubMenu>
               <SubMenu key="4" icon="suiconhezi" title="创建的歌单">
-                <Item key="4-1">Option 1</Item>
+                {userEntity.playlist &&
+                  userEntity.playlist
+                    .filter((item: any) => item.userId === userEntity.userId)
+                    .map((item: any) => {
+                      return (
+                        <Item icon="iconfont icon-gedan" key={item.id}>
+                          {item.name}
+                        </Item>
+                      );
+                    })}
               </SubMenu>
-
               <SubMenu
                 key="5"
                 icon="suiconicon_yingyongguanli"
                 title="收藏的歌单"
               >
-                <Item key="5-1" icon="suiconcloud-form">
-                  Option 1
-                </Item>
+                {userEntity.playlist &&
+                  userEntity.playlist
+                    .filter((item: any) => item.userId !== userEntity.userId)
+                    .map((item: any) => {
+                      return (
+                        <Item icon="iconfont icon-gedan" key={item.id}>
+                          {item.name}
+                        </Item>
+                      );
+                    })}
               </SubMenu>
             </Menu>
           </Sider>
@@ -144,7 +170,15 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
         </Layout>
       </div>
       {openlogin && <Login onClose={setopenlogin.bind(null, false)} />}
+      <video
+        style={{ width: 0, height: 0 }}
+        src={musicEntity.currentMusic && musicEntity.currentMusic.src}
+        autoPlay={true}
+        id="vedio"
+      />
     </>
   );
 };
-export default connect(({ user }: any) => ({ ...user }))(AppLayout);
+export default connect(({ user, music }: any) => ({ ...user, ...music }))(
+  AppLayout,
+);
