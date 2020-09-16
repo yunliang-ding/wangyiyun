@@ -170,7 +170,9 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
           </Layout>
         </Layout>
       </div>
-      {openlogin && <Login onClose={setopenlogin.bind(null, false)} />}
+      {openlogin && (
+        <Login onClose={setopenlogin.bind(null, false)} theme={theme} />
+      )}
     </>
   );
 };

@@ -3,7 +3,7 @@ import { Modal, Input, Icon, Button, RadioGroup } from 'site-ui';
 import { User } from '@/service';
 import { connect } from 'dva';
 import './index.less';
-const Login = ({ onClose, dispatch }: any) => {
+const Login = ({ onClose, dispatch, theme }: any) => {
   const [username, setusername] = useState('');
   const [password, setpassword] = useState('');
   const [loginWay, setloginway]: any = useState(1);
@@ -32,28 +32,29 @@ const Login = ({ onClose, dispatch }: any) => {
       });
     }
   };
+  const className = theme === 'dark' ? 'app-login-box-dark' : 'app-login-box';
   return (
-    <Modal
-      title="用户登录"
-      style={{
-        width: 600,
-        height: 400,
-      }}
-      closable
-      mask
-      footer={
-        <>
-          <Button type="primary" onClick={onOk}>
-            确定
-          </Button>
-          <Button onClick={onClose}>取消</Button>
-        </>
-      }
-      visible
-      onClose={onClose}
-      onOk={onOk}
-    >
-      <div className="app-login-box">
+    <div className={className}>
+      <Modal
+        title="用户登录"
+        style={{
+          width: 520,
+          height: 400,
+        }}
+        closable
+        mask
+        footer={
+          <>
+            <Button type="primary" onClick={onOk}>
+              确定
+            </Button>
+            <Button onClick={onClose}>取消</Button>
+          </>
+        }
+        visible
+        onClose={onClose}
+        onOk={onOk}
+      >
         <div className="app-login-way">
           <RadioGroup
             options={[
@@ -98,8 +99,8 @@ const Login = ({ onClose, dispatch }: any) => {
           }}
           prefix={<Icon size={16} type="iconfont icon-mima" />}
         />
-      </div>
-    </Modal>
+      </Modal>
+    </div>
   );
 };
 export default connect()(Login);
