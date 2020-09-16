@@ -47,7 +47,10 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
               {collapsed ? (
                 <i className="iconfont icon-wangyiyunyinle"></i>
               ) : (
-                <span>云音乐</span>
+                <>
+                  <i className="iconfont icon-wangyiyunyinle"></i>
+                  <span style={{ marginLeft: 10 }}>简听</span>
+                </>
               )}
             </div>
             <Menu

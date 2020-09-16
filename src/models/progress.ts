@@ -1,11 +1,11 @@
-const progress = JSON.parse(sessionStorage.getItem('progress') || '');
+const progressEntity = JSON.parse(
+  sessionStorage.getItem('progress') ||
+    '{"progress":0, "playing":false, "voice": 100}',
+);
 export default {
   namespace: 'progress',
   state: {
-    progressEntity: progress || {
-      progress: 0,
-      playing: false,
-    },
+    progressEntity,
   },
   effects: {},
   reducers: {

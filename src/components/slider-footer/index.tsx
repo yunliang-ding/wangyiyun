@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Message, Slider } from 'site-ui';
+import { Badge, Message, Slider, Tooltip } from 'site-ui';
 import { connect } from 'dva';
 import './index.less';
 const Window: any = window;
@@ -13,7 +13,7 @@ const SliderFooter = ({
   dispatch,
 }: any) => {
   const { duration, src, image, artists, name } = currentMusic || {};
-  const { progress, playing } = progressEntity || {};
+  const { progress, playing, voice } = progressEntity || {};
   Window.progressEntity = progressEntity;
   const setProgress = (progress?: any) => {
     Window.progressEntity.progress = progress;
@@ -30,6 +30,15 @@ const SliderFooter = ({
       payload: Window.progressEntity,
     });
     playing ? $('#audio').play() : $('#audio').pause();
+    sessionStorage.setItem('progress', JSON.stringify(Window.progressEntity));
+  };
+  const setVoice = (voice: number) => {
+    Window.progressEntity.voice = voice;
+    dispatch({
+      type: 'progress/update',
+      payload: Window.progressEntity,
+    });
+    $('#audio').volume = voice / 100;
     sessionStorage.setItem('progress', JSON.stringify(Window.progressEntity));
   };
   const playerBefore = () => {
@@ -63,7 +72,8 @@ const SliderFooter = ({
   };
   useEffect(() => {
     if ($('#audio')) {
-      $('#audio').currentTime = progress / 1000;
+      $('#audio').currentTime = progress / 1000; // progress
+      $('#audio').volume = voice / 100; // voice
       $('#audio').ontimeupdate = (e: any) => {
         setProgress(e.target.currentTime * 1000);
       };
@@ -189,7 +199,23 @@ const SliderFooter = ({
               minWidth: 200,
             }}
           >
-            <i className="iconfont icon-shengyin"></i>
+            <Tooltip
+              placement="left"
+              title={
+                <div className="app-audio-voice">
+                  <Slider
+                    value={voice}
+                    tooltipVisible={null}
+                    style={{ width: 120 }}
+                    onChange={(e: any) => {
+                      setVoice(e);
+                    }}
+                  />
+                </div>
+              }
+            >
+              <i className="iconfont icon-shengyin"></i>
+            </Tooltip>
             <i className="iconfont icon-xunhuanbofang"></i>
             <i
               className="iconfont icon-icon-"
@@ -198,7 +224,25 @@ const SliderFooter = ({
                 // setPlyerRecord(!plyerRecord)
               }}
             >
-              <Badge count={musicCache.length} />
+              {musicCache.length && (
+                <>
+                  <Badge count={musicCache.length} />
+                  <span
+                    style={{
+                      marginLeft: 10,
+                      fontSize: 12,
+                      width: 30,
+                      display: 'inline-block',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {musicCache.findIndex((item: any) => {
+                      return item.id === currentMusic.id;
+                    }) + 1}
+                    /{musicCache.length}
+                  </span>
+                </>
+              )}
             </i>
           </div>
         </div>
