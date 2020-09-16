@@ -44,7 +44,8 @@ const Record = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
             item.id = item.song.id;
             item.name = item.song.name;
             item.artists = item.song.ar[0].name;
-            (item.image = item.song.al.picUrl), (item.duration = item.song.dt);
+            item.image = item.song.al.picUrl;
+            item.duration = item.song.dt;
             return item;
           }),
         },

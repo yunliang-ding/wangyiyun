@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon, Tooltip, Button } from 'site-ui';
+import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
 import util from '@/util';
 import './index.less';
+const message = new Message({
+  duration: 3,
+});
 const weekMapping: any = {
   '0': '周 日',
   '1': '周 一',
@@ -60,13 +63,17 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       currentMusic.artists,
     );
     setloading(false);
-    dispatch({
-      type: 'music/update',
-      payload: {
-        currentMusic: music,
-        musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
-      },
-    });
+    if (music) {
+      dispatch({
+        type: 'music/update',
+        payload: {
+          currentMusic: music,
+          musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
+        },
+      });
+    } else {
+      message.warning('歌曲不存在!');
+    }
   };
   const columns = [
     {
