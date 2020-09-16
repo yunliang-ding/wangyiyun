@@ -10,6 +10,7 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
     if (tableRef.current) {
       const { height } = tableRef.current.getBoundingClientRect();
       setheight(height);
+      console.log('height', height);
     }
     window.addEventListener('resize', () => {
       if (tableRef.current) {
@@ -33,7 +34,7 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
       title: '序号',
       dataIndex: 'sort',
       key: 'sort',
-      width: 80,
+      width: 60,
       render: (e: any, record: any, index: number) => {
         return index + 1;
       },
@@ -42,7 +43,7 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
       title: '播放',
       dataIndex: 'play',
       key: 'play',
-      width: 80,
+      width: 60,
       render: (e: any, record: any) => {
         let playing =
           musicEntity.currentMusic && musicEntity.currentMusic.id === record.id;
@@ -61,41 +62,66 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
       title: '音乐标题',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
+      width: 280,
       ellipsis: true,
     },
+    {
+      title: '',
+      dataIndex: 'delete',
+      key: 'delete',
+      width: 60,
+      render: (e: any, record: any) => {
+        return (
+          <Icon
+            onClick={clear.bind(null, record.id)}
+            type="iconfont icon-shanchu"
+            style={{
+              cursor: 'pointer',
+            }}
+          />
+        );
+      },
+    },
   ];
-  const clear = () => {};
+  const clear = (id: string) => {
+    const musicCache = musicEntity.musicCache.filter((item: any) => {
+      return item.id !== id;
+    });
+    dispatch({
+      type: 'music/update',
+      payload: {
+        musicCache,
+      },
+    });
+    localStorage.setItem('music', JSON.stringify(musicCache));
+  };
   return (
-    <Drawer
-      title="播放歌单"
-      style={{
-        width: 400,
-      }}
-      top={85}
-      closable
-      mask={false}
-      footer={false}
-      visible
-      onClose={onClose}
-    >
-      <div
-        className="app-play-record"
-        ref={tableRef}
-        style={{ height: '100%' }}
+    <div className="app-play-record">
+      <Drawer
+        title="播放歌单"
+        style={{
+          width: 460,
+        }}
+        closable
+        mask
+        footer={false}
+        visible
+        onClose={onClose}
       >
-        <Table
-          bordered={false}
-          rowKey="id"
-          onCheck={false}
-          checkable={false}
-          pagination={false}
-          dataSource={musicEntity.musicCache}
-          columns={columns}
-          style={{ height }}
-        />
-      </div>
-    </Drawer>
+        <div ref={tableRef} style={{ height: '100%' }}>
+          <Table
+            bordered={false}
+            rowKey="id"
+            onCheck={false}
+            checkable={false}
+            pagination={false}
+            dataSource={musicEntity.musicCache}
+            columns={columns}
+            style={{ height }}
+          />
+        </div>
+      </Drawer>
+    </div>
   );
 };
 export default connect(({ music, user }: any) => ({ ...music, ...user }))(

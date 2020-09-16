@@ -73,7 +73,7 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
         },
       });
     } else {
-      message.warning('歌曲不存在!');
+      message.error('歌曲不存在!');
     }
   };
   const columns = [
@@ -231,8 +231,12 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-liked" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-liked-header">
+    <div
+      className="app-liked app-content-chidren"
+      ref={tableRef}
+      style={{ height: '100%' }}
+    >
+      <div className="app-liked-header app-content-chidren-header">
         <Icon type="iconfont icon-xihuan" />
         <b>累计喜欢 {musicEntity.liked.length} 首歌曲</b>
         <Button

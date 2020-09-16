@@ -72,7 +72,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         },
       });
     } else {
-      message.warning('歌曲不存在!');
+      message.error('歌曲不存在!');
     }
   };
   const columns = [
@@ -230,13 +230,19 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-recommend" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-recommend-header">
+    <div
+      className="app-recommend app-content-chidren"
+      ref={tableRef}
+      style={{ height: '100%' }}
+    >
+      <div className="app-recommend-header app-content-chidren-header">
         <div className="dates">
           <div className="datas-weeks">{weekMapping[new Date().getDay()]}</div>
           <div className="datas-days">{new Date().getDate()}</div>
         </div>
-        <b>《每日歌曲推荐》依据您的音乐口味生成, 6:00 准时更新</b>
+        <span style={{ fontSize: 12, color: '#444' }}>
+          《每日歌曲推荐》依据您的音乐口味生成, 6:00 准时更新
+        </span>
         <Button
           style={{ width: 80, margin: '0 20px' }}
           type="dashed"

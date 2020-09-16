@@ -26,7 +26,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   };
   useEffect(() => {
     setInterval(() => {
-      settheme(new Date().getHours() > 18 ? 'dark' : 'light'); // 更新主题定时器
+      settheme(new Date().getHours() > 18 ? 'dark' : 'dark'); // 更新主题定时器
     }, 60 * 1000);
   }, []);
   return (
@@ -48,8 +48,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
                 <i className="iconfont icon-wangyiyunyinle"></i>
               ) : (
                 <>
-                  <i className="iconfont icon-wangyiyunyinle"></i>
-                  <span style={{ marginLeft: 10 }}>简听</span>
+                  <span style={{ marginLeft: 10 }}>简听音乐</span>
                 </>
               )}
             </div>
@@ -117,7 +116,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
               <div className="app-layout-header-left">
                 <Input
                   placeholder="查找"
-                  suffix={<Icon type="suiconsearchicon" />}
+                  suffix={<Icon type="iconfont icon-search" />}
                 />
               </div>
               <div className="app-layout-header-right">

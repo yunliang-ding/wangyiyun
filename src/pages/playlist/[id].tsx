@@ -80,7 +80,7 @@ const Songs = (props: any) => {
         },
       });
     } else {
-      message.warning('歌曲不存在!');
+      message.error('歌曲不存在!');
     }
   };
   const columns = [
@@ -238,8 +238,8 @@ const Songs = (props: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-playlist" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-playlist-header">
+    <div className="app-playlist app-content-chidren" ref={tableRef} style={{ height: '100%' }}>
+      <div className="app-playlist-header app-content-chidren-header">
         {
           musicEntity.playlist.createTime && <>
             <img src={musicEntity.playlist.creator.avatarUrl + '?param=60y60'}></img>

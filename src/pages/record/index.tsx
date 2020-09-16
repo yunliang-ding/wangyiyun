@@ -70,7 +70,7 @@ const Record = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
         },
       });
     } else {
-      message.warning('歌曲不存在!');
+      message.error('歌曲不存在!');
     }
     setloading(false);
   };
@@ -248,8 +248,12 @@ const Record = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-record" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-record-header">
+    <div
+      className="app-record app-content-chidren"
+      ref={tableRef}
+      style={{ height: '100%' }}
+    >
+      <div className="app-record-header app-content-chidren-header">
         <div className="app-record-header-tips">
           <b>《听歌排行》亲爱的！这是你在网易云的第</b>
           <span className="app-record-header-tips-days">

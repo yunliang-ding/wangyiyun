@@ -57,6 +57,7 @@ const SliderFooter = ({
     });
   };
   const playerNext = () => {
+    console.log(currentMusic);
     let index = musicCache.findIndex((item: any) => {
       return item.id === currentMusic.id;
     });
@@ -83,7 +84,7 @@ const SliderFooter = ({
         playerNext();
       };
       $('#audio').onerror = () => {
-        src !== undefined && message.warning('暂无版权!');
+        src !== undefined && message.error('暂无版权!');
       };
     }
   }, []);

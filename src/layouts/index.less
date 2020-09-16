@@ -1,4 +1,5 @@
 @import '//at.alicdn.com/t/font_1446686_q745o0k320d.css';
+@import './dark.less';
 body,
 html,
 div {
@@ -56,7 +57,7 @@ div {
     .main {
       width: 100%;
       height: 100%;
-      background-color: #fff;
+      background-color: inherit;
       overflow: hidden;
     }
   }
@@ -66,9 +67,9 @@ div {
     justify-content: center;
     color: #333;
     background-color: #fff;
+    box-shadow: 7px -4px 10px 0 rgba(48, 62, 83, 0.06);
   }
-  .sui-layout-sider,
-  .sui-layout-sider-dark {
+  .sui-layout-sider {
     overflow: hidden;
     background-color: #f8f8fb;
     .logo {
@@ -79,31 +80,13 @@ div {
       justify-content: center;
       background-color: #fff;
       font-family: cursive;
-      font-size: 20px;
+      font-size: 16px;
       box-shadow: 0 4px 10px 0 rgba(48, 62, 83, 0.06);
     }
-    .sui-nav {
+    .sui-nav,
+    .sui-nav-dark {
       overflow: auto;
       height: calc(100vh - 128px);
-    }
-  }
-  .sui-layout-sider-dark {
-    background-color: #00162a;
-    .logo {
-      background-color: #002140;
-      color: #fff;
-      white-space: nowrap;
-      .iconfont {
-        font-size: 30px;
-      }
-      span {
-        font-size: 18px;
-        margin: 0 8px;
-        color: #fff;
-      }
-    }
-    .sui-layout-sider-trigger {
-      background-color: #002140 !important;
     }
   }
 }
@@ -132,5 +115,12 @@ div {
   position: fixed !important;
   width: 240px !important;
   transition: 0.3s;
+  box-shadow: 7px -4px 10px 0 rgba(48, 62, 83, 0.06);
   background-color: #fff !important;
+}
+.sui-table-wrapper {
+  border: 0;
+  .sui-table-tr {
+    border: 0 !important;
+  }
 }
