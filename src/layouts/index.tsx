@@ -63,7 +63,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
               <Item key="/discover" icon="suiconpassword-visible">
                 发现音乐
               </Item>
-              <Item key="/vedio" icon="iconfont icon-shipin1">
+              <Item key="/video" icon="iconfont icon-shipin1">
                 视频
               </Item>
               <SubMenu key="3" icon="iconfont icon-yonghu" title="我的音乐">

@@ -36,9 +36,10 @@ export default {
     let song: any = musicCache.find((item: any) => {
       return item.id === id;
     });
-    let music: any = {};
+    let music: any = {
+      playing: true,
+    };
     if (song) {
-      music.playing = true;
       if (song.lyric === '') {
         //没有歌词需要查一下
         const { lrc, tlyric } = await get('/api/lyric', {

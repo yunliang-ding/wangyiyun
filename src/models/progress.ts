@@ -1,7 +1,8 @@
+const progress = JSON.parse(sessionStorage.getItem('progress') || '');
 export default {
   namespace: 'progress',
   state: {
-    progressEntity: {
+    progressEntity: progress || {
       progress: 0,
       playing: false,
     },

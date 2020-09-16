@@ -21,6 +21,7 @@ const SliderFooter = ({
       type: 'progress/update',
       payload: Window.progress,
     });
+    sessionStorage.setItem('progress', JSON.stringify(Window.progressEntity));
   };
   const setPlaying = (playing: boolean) => {
     Window.progressEntity.playing = playing;
@@ -28,7 +29,8 @@ const SliderFooter = ({
       type: 'progress/update',
       payload: Window.progressEntity,
     });
-    playing ? $('#vedio').play() : $('#vedio').pause();
+    playing ? $('#audio').play() : $('#audio').pause();
+    sessionStorage.setItem('progress', JSON.stringify(Window.progressEntity));
   };
   const playerBefore = () => {
     let index = musicCache.findIndex((item: any) => {
@@ -60,14 +62,15 @@ const SliderFooter = ({
     });
   };
   useEffect(() => {
-    if ($('#vedio')) {
-      $('#vedio').ontimeupdate = (e: any) => {
+    if ($('#audio')) {
+      $('#audio').currentTime = progress / 1000;
+      $('#audio').ontimeupdate = (e: any) => {
         setProgress(e.target.currentTime * 1000);
       };
-      $('#vedio').onended = () => {
+      $('#audio').onended = () => {
         playerNext();
       };
-      $('#vedio').onerror = () => {
+      $('#audio').onerror = () => {
         src !== undefined && message.warning('暂无版权!');
       };
     }
@@ -81,8 +84,7 @@ const SliderFooter = ({
             tooltipVisible={null}
             style={{ width: '100%' }}
             onChange={(e: any) => {
-              $('#vedio').currentTime = (duration * e) / 100 / 1000;
-              playing ? $('#vedio').play() : $('#vedio').pause();
+              $('#audio').currentTime = (duration * e) / 100 / 1000;
               setProgress((duration * e) / 100);
             }}
           />
@@ -201,7 +203,7 @@ const SliderFooter = ({
           </div>
         </div>
       </div>
-      <video style={{ display: 'none' }} src={src} autoPlay id="vedio" />
+      <audio style={{ display: 'none' }} src={src} autoPlay id="audio" />
     </>
   );
 };
