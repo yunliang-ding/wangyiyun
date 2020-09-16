@@ -20,6 +20,10 @@ export default {
   async songs(params: any) {
     return get('/api/song/detail', params);
   },
+  // 查询歌单
+  async playlist(params: any) {
+    return get('/api/playlist/detail', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,

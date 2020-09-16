@@ -8,7 +8,7 @@ export default {
         localStorage.getItem('currentMusic') ||
           JSON.stringify({
             id: '',
-            url: 'http://',
+            src: 'http://',
             name: '',
             artists: '',
             duration: '',
@@ -25,7 +25,10 @@ export default {
       recommend: [],
       liked: [],
       simi: [],
-      playlist: [],
+      playlist: {
+        data: [],
+        creator: {},
+      },
     },
   },
   effects: {},

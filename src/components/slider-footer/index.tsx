@@ -9,27 +9,24 @@ const message = new Message({
 const $: any = document.querySelector.bind(document);
 const SliderFooter = ({
   musicEntity: { currentMusic, musicCache },
+  progressEntity,
   dispatch,
 }: any) => {
-  const { duration, playing, progress, src, image, artists, name } =
-    currentMusic || {};
-  Window.music = currentMusic;
+  const { duration, src, image, artists, name } = currentMusic || {};
+  const { progress, playing } = progressEntity || {};
+  Window.progressEntity = progressEntity;
   const setProgress = (progress?: any) => {
-    Window.music.progress = progress;
+    Window.progressEntity.progress = progress;
     dispatch({
-      type: 'music/update',
-      payload: {
-        currentMusic: Window.music,
-      },
+      type: 'progress/update',
+      payload: Window.progress,
     });
   };
   const setPlaying = (playing: boolean) => {
-    Window.music.playing = playing;
+    Window.progressEntity.playing = playing;
     dispatch({
-      type: 'music/update',
-      payload: {
-        currentMusic: Window.music,
-      },
+      type: 'progress/update',
+      payload: Window.progressEntity,
     });
     playing ? $('#vedio').play() : $('#vedio').pause();
   };
@@ -208,4 +205,7 @@ const SliderFooter = ({
     </>
   );
 };
-export default connect(({ music }: any) => ({ ...music }))(SliderFooter);
+export default connect(({ music, progress }: any) => ({
+  ...music,
+  ...progress,
+}))(SliderFooter);

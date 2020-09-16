@@ -7,7 +7,8 @@ import './index.less';
 const message = new Message({
   duration: 3,
 });
-const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
+const Songs = (props: any) => {
+  const { userEntity = {}, musicEntity = {}, dispatch }: any = props
   const [loading, setloading] = useState(false);
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
@@ -25,30 +26,36 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
       }
     });
   }, []);
+  /** update */
+  useEffect(()=>{
+    query();
+  }, [props.match.params.id])
   /** 查询推荐 */
   const query = async () => {
     setloading(true);
-    const { code, ids } = await Music.liked({
-      uid: userEntity.userId,
+    const { code, privileges, playlist } = await Music.playlist({
+      id: props.match.params.id,
     });
     if (code === 200) {
       const { code, songs } = await Music.songs({
-        ids: ids.join(','),
+        ids: privileges.map((item: any) => item.id).join(',')
       });
+      if (code === 200) {
+        playlist.data = songs.map((item: any, index: number) => {
+          item.sort = index + 1;
+          item.artists = item.ar[0].name;
+          item.album = item.al;
+          item.image = item.al.picUrl;
+          item.duration = item.dt;
+          item.mvid = item.mv;
+          return item;
+        }) || []
+      }
       code === 200 &&
         dispatch({
           type: 'music/update',
           payload: {
-            liked:
-              songs.map((item: any, index: number) => {
-                item.sort = index + 1;
-                item.artists = item.ar[0].name;
-                item.album = item.al;
-                item.image = item.al.picUrl;
-                item.duration = item.dt;
-                item.mvid = item.mv;
-                return item;
-              }) || [],
+            playlist
           },
         });
     }
@@ -204,7 +211,7 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
     },
   ];
   const playAll = () => {
-    musicEntity.liked.forEach((music: any) => {
+    musicEntity.playlist.data.forEach((music: any) => {
       if (!musicEntity.musicCache.some((item: any) => item.id === music.id)) {
         musicEntity.musicCache.push({
           id: music.id,
@@ -231,17 +238,31 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-liked" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-liked-header">
-        <Icon type="iconfont icon-xihuan" />
-        <b>累计喜欢 {musicEntity.liked.length} 首歌曲</b>
-        <Button
-          style={{ width: 80, margin: '0 20px' }}
-          type="dashed"
-          onClick={playAll}
-        >
-          播放全部
+    <div className="app-playlist" ref={tableRef} style={{ height: '100%' }}>
+      <div className="app-playlist-header">
+        {
+          musicEntity.playlist.createTime && <>
+            <img src={musicEntity.playlist.creator.avatarUrl + '?param=60y60'}></img>
+            <h5>
+              {musicEntity.playlist.name}
+            </h5>
+            <h5>
+              <span style={{ fontSize: 12, marginLeft: 10 }}>{new Date(musicEntity.playlist.createTime).toLocaleDateString()} 创建</span>
+              <span style={{ fontSize: 12, margin: '0 10px', color: '#111' }}>{musicEntity.playlist.creator.nickname}</span>
+            </h5>
+            <h5 className='app-playlist-header-number'>
+              <span>歌曲数</span>
+              {musicEntity.playlist.data.length}
+            </h5>
+            <Button
+              style={{ width: 80, margin: '0 20px' }}
+              type="dashed"
+              onClick={playAll}
+            >
+              播放全部
         </Button>
+          </>
+        }
       </div>
       <Table
         bordered={false}
@@ -250,7 +271,7 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
         checkable={false}
         pagination={false}
         loading={loading}
-        dataSource={musicEntity.liked}
+        dataSource={musicEntity.playlist.data}
         columns={columns}
         style={{ height }}
         rows={{
@@ -266,5 +287,5 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
   );
 };
 export default connect(({ music, user }: any) => ({ ...music, ...user }))(
-  Liked,
+  Songs,
 );

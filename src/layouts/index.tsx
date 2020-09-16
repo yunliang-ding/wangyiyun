@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Layout, Menu, Icon, Input, Tooltip } from 'site-ui';
 import { Login, SliderFooter } from '@/components';
 import { User } from '@/service';
+import { history } from 'umi';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
@@ -54,25 +55,25 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
               collapsed={collapsed}
               collapsedWidth={80}
               menuClick={(openkey: any, selectKey: any) => {
-                console.log(openkey, selectKey);
+                history.push(selectKey[0]);
               }}
               openKey={['3']}
-              selectKey={['3-1']}
+              selectKey={['/recommend']}
             >
-              <Item key="1" icon="suiconpassword-visible">
+              <Item key="/discover" icon="suiconpassword-visible">
                 发现音乐
               </Item>
-              <Item key="2" icon="iconfont icon-shipin1">
+              <Item key="/vedio" icon="iconfont icon-shipin1">
                 视频
               </Item>
               <SubMenu key="3" icon="iconfont icon-yonghu" title="我的音乐">
-                <Item key="3-1" icon="iconfont icon-tuijian">
+                <Item key="/recommend" icon="iconfont icon-tuijian">
                   每日推荐
                 </Item>
-                <Item key="3-2" icon="iconfont icon-history">
+                <Item key="/record" icon="iconfont icon-history">
                   播放记录
                 </Item>
-                <Item key="3-3" icon="iconfont icon-xihuan">
+                <Item key="/liked" icon="iconfont icon-xihuan">
                   喜欢的歌
                 </Item>
               </SubMenu>
@@ -82,23 +83,25 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
                     .filter((item: any) => item.userId === userEntity.userId)
                     .map((item: any) => {
                       return (
-                        <Item icon="iconfont icon-gedan" key={item.id}>
+                        <Item
+                          icon="iconfont icon-gedan"
+                          key={`/playlist/${item.id}`}
+                        >
                           {item.name}
                         </Item>
                       );
                     })}
               </SubMenu>
-              <SubMenu
-                key="5"
-                icon="suiconicon_yingyongguanli"
-                title="收藏的歌单"
-              >
+              <SubMenu key="5" icon="iconfont icon-shoucang" title="收藏的歌单">
                 {userEntity.playlist &&
                   userEntity.playlist
                     .filter((item: any) => item.userId !== userEntity.userId)
                     .map((item: any) => {
                       return (
-                        <Item icon="iconfont icon-gedan" key={item.id}>
+                        <Item
+                          icon="iconfont icon-gedan"
+                          key={`/playlist/${item.id}`}
+                        >
                           {item.name}
                         </Item>
                       );
