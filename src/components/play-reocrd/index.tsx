@@ -1,105 +1,103 @@
-import React, { useState } from 'react';
-import { Modal, Input, Icon, Button, RadioGroup } from 'site-ui';
-import { User } from '@/service';
+import React, { useState, useEffect, useRef } from 'react';
+import { Table, Icon, Drawer } from 'site-ui';
 import { connect } from 'dva';
 import './index.less';
-const Login = ({ onClose, dispatch }: any) => {
-  const [username, setusername] = useState('');
-  const [password, setpassword] = useState('');
-  const [loginWay, setloginway]: any = useState(1);
-  const onOk = async () => {
-    const { code, profile, account } = await User.login({
-      username,
-      password,
-      loginWay,
-    });
-    if (code === 200) {
-      const { playlist } = await User.queryUserPlayList(profile.userId);
-      onClose();
-      let userInfo = {
-        ...profile,
-        playlist,
-        loginWay,
-        username,
-        password,
-        createTime: account.createTime,
-      };
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      window.location.reload(); // reload
-      dispatch({
-        type: 'user/update',
-        payload: userInfo,
-      });
+const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
+  const [height, setheight]: any = useState(false);
+  const [hoverRow, sethoverRow] = useState('');
+  const tableRef: any = useRef();
+  useEffect(() => {
+    if (tableRef.current) {
+      const { height } = tableRef.current.getBoundingClientRect();
+      setheight(height);
     }
-  };
-  return (
-    <Modal
-      title="用户登录"
-      style={{
-        width: 600,
-        height: 400,
-      }}
-      closable
-      mask
-      footer={
-        <>
-          <Button type="primary" onClick={onOk}>
-            确定
-          </Button>
-          <Button onClick={onClose}>取消</Button>
-        </>
+    window.addEventListener('resize', () => {
+      if (tableRef.current) {
+        const { height } = tableRef.current.getBoundingClientRect();
+        setheight(height);
       }
-      visible
-      onClose={onClose}
-      onOk={onOk}
-    >
-      <div className="app-login-box">
-        <div className="app-login-way">
-          <RadioGroup
-            options={[
-              {
-                label: '邮箱登录',
-                value: 1,
-              },
-              {
-                label: '手机号登录',
-                value: 0,
-              },
-            ]}
-            value={loginWay}
-            onChange={(e: any) => {
-              setloginway(e);
+    });
+  }, []);
+  /** 播放歌曲 */
+  const setCurrentMusic = async (currentMusic: any) => {
+    dispatch({
+      type: 'music/update',
+      payload: {
+        currentMusic,
+        musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
+      },
+    });
+  };
+  const columns = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      key: 'sort',
+      width: 80,
+      render: (e: any, record: any, index: number) => {
+        return index + 1;
+      },
+    },
+    {
+      title: '播放',
+      dataIndex: 'play',
+      key: 'play',
+      width: 80,
+      render: (e: any, record: any) => {
+        let playing =
+          musicEntity.currentMusic && musicEntity.currentMusic.id === record.id;
+        return (
+          <Icon
+            type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setCurrentMusic(record);
             }}
           />
-        </div>
-        <Input
-          placeholder={loginWay === 1 ? '邮箱' : '手机号'}
-          value={username}
-          onChange={(e: any) => {
-            setusername(e.target.value);
-          }}
-          prefix={
-            <Icon
-              size={18}
-              type={
-                loginWay === 1
-                  ? 'iconfont icon-youxiang'
-                  : 'iconfont icon-shouji'
-              }
-            />
-          }
-        />
-        <Input
-          placeholder="密码"
-          type="password"
-          value={password}
-          onChange={(e: any) => {
-            setpassword(e.target.value);
-          }}
-          prefix={<Icon size={16} type="iconfont icon-mima" />}
+        );
+      },
+    },
+    {
+      title: '音乐标题',
+      dataIndex: 'name',
+      key: 'name',
+      width: 200,
+      ellipsis: true,
+    },
+  ];
+  const clear = () => {};
+  return (
+    <Drawer
+      title="播放歌单"
+      style={{
+        width: 400,
+      }}
+      top={85}
+      closable
+      mask={false}
+      footer={false}
+      visible
+      onClose={onClose}
+    >
+      <div
+        className="app-play-record"
+        ref={tableRef}
+        style={{ height: '100%' }}
+      >
+        <Table
+          bordered={false}
+          rowKey="id"
+          onCheck={false}
+          checkable={false}
+          pagination={false}
+          dataSource={musicEntity.musicCache}
+          columns={columns}
+          style={{ height }}
         />
       </div>
-    </Modal>
+    </Drawer>
   );
 };
-export default connect()(Login);
+export default connect(({ music, user }: any) => ({ ...music, ...user }))(
+  PlayRecord,
+);

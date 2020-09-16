@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, Message, Slider, Tooltip } from 'site-ui';
 import { connect } from 'dva';
+import { PlayRecord } from '@/components';
 import './index.less';
 const Window: any = window;
 const message = new Message({
@@ -14,6 +15,7 @@ const SliderFooter = ({
 }: any) => {
   const { duration, src, image, artists, name } = currentMusic || {};
   const { progress, playing, voice } = progressEntity || {};
+  const [openRecord, setopenRecord] = useState(false);
   Window.progressEntity = progressEntity;
   const setProgress = (progress?: any) => {
     Window.progressEntity.progress = progress;
@@ -220,9 +222,7 @@ const SliderFooter = ({
             <i
               className="iconfont icon-icon-"
               id="app-badge-cache"
-              onClick={() => {
-                // setPlyerRecord(!plyerRecord)
-              }}
+              onClick={setopenRecord.bind(null, !openRecord)}
             >
               {musicCache.length && (
                 <>
@@ -248,6 +248,7 @@ const SliderFooter = ({
         </div>
       </div>
       <audio style={{ display: 'none' }} src={src} autoPlay id="audio" />
+      {openRecord && <PlayRecord onClose={setopenRecord.bind(null, false)} />}
     </>
   );
 };
