@@ -8,7 +8,7 @@ const Login = ({ onClose, dispatch }: any) => {
   const [password, setpassword] = useState('');
   const [loginWay, setloginway]: any = useState(1);
   const onOk = async () => {
-    const { code, profile } = await User.login({
+    const { code, profile, account } = await User.login({
       username,
       password,
       loginWay,
@@ -16,13 +16,19 @@ const Login = ({ onClose, dispatch }: any) => {
     if (code === 200) {
       const { playlist } = await User.queryUserPlayList(profile.userId);
       onClose();
-      localStorage.setItem(
-        'userInfo',
-        JSON.stringify({ ...profile, playlist, loginWay, username, password }),
-      );
+      let userInfo = {
+        ...profile,
+        playlist,
+        loginWay,
+        username,
+        password,
+        createTime: account.createTime,
+      };
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      window.location.reload(); // reload
       dispatch({
         type: 'user/update',
-        payload: { ...profile, playlist },
+        payload: userInfo,
       });
     }
   };

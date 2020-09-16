@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, Message, Slider } from 'site-ui';
-import { Music } from '@/service';
 import { connect } from 'dva';
 import './index.less';
 const Window: any = window;
@@ -195,6 +194,7 @@ const SliderFooter = ({
             <i className="iconfont icon-xunhuanbofang"></i>
             <i
               className="iconfont icon-icon-"
+              id="app-badge-cache"
               onClick={() => {
                 // setPlyerRecord(!plyerRecord)
               }}

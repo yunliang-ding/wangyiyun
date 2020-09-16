@@ -1,5 +1,5 @@
 @primary-color: #4569d4;
-.app-main-recommend {
+.app-recommend {
   position: relative;
   .sui-table-tr {
     border-bottom-color: #f8f8f8 !important;
@@ -10,6 +10,33 @@
   .icon-bofang {
     &:hover {
       color: @primary-color;
+    }
+  }
+  .app-recommend-header {
+    height: 50px;
+    display: flex;
+    padding: 0 60px;
+    padding-right: 18px;
+    align-items: center;
+    position: relative;
+    background: #ffffff8c;
+    .dates {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 50px;
+      background-color: #eee;
+      .datas-weeks,
+      .datas-days {
+        color: #666;
+        transform: scale(0.9);
+      }
     }
   }
 }

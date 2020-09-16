@@ -1,3 +1,4 @@
+@primary-color: #4569d4;
 .sui-layout-footer {
   padding: 0 !important;
 }
@@ -19,6 +20,22 @@
     height: 100%;
     padding-left: 20px;
     padding-right: 50px;
+    .sui-badge-wrapper-new {
+      position: relative;
+      &::after {
+        content: ' ';
+        width: 16px;
+        height: 16px;
+        background-color: @primary-color;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: -5px;
+        transform: scale(0);
+        animation: badge-move-top 1s 0.4s 1 linear,
+          badge-move-right 1s 0.4s 1 cubic-bezier(0.66, 0.1, 1, 0.41);
+      }
+    }
   }
   .music-tools {
     height: 100%;
@@ -53,5 +70,23 @@
     a {
       color: var(--theme-color);
     }
+  }
+}
+@keyframes badge-move-top {
+  0% {
+    top: -30px;
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+    top: 0;
+  }
+}
+@keyframes badge-move-right {
+  0% {
+    left: -50px;
+  }
+  100% {
+    left: 0;
   }
 }

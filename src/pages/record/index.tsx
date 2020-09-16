@@ -1,54 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon, Tooltip, Button } from 'site-ui';
+import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
 import util from '@/util';
 import './index.less';
-const weekMapping: any = {
-  '0': '周 日',
-  '1': '周 一',
-  '2': '周 二',
-  '3': '周 三',
-  '4': '周 四',
-  '5': '周 五',
-  '6': '周 六',
-};
-const Recommend = ({ musicEntity = {}, dispatch }: any) => {
+const message = new Message({
+  duration: 3,
+});
+const Record = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
   const [loading, setloading] = useState(false);
-  const [height, setheight] = useState(false);
+  const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
+  const [type, settype] = useState(1);
   const tableRef: any = useRef();
   useEffect(() => {
     if (tableRef.current) {
       query();
       const { height } = tableRef.current.getBoundingClientRect();
-      setheight(height);
+      setheight(height - 50);
     }
     window.addEventListener('resize', () => {
       if (tableRef.current) {
         const { height } = tableRef.current.getBoundingClientRect();
-        setheight(height);
+        setheight(height - 50);
       }
     });
   }, []);
   /** 查询推荐 */
   const query = async () => {
     setloading(true);
-    const { code, recommend } = await Music.recommend();
+    const { code, weekData, allData } = await Music.record({
+      uid: userEntity.userId,
+      type,
+    });
     setloading(false);
-    code === 200 &&
+    if (code === 200) {
+      let data = weekData || allData;
       dispatch({
         type: 'music/update',
         payload: {
-          recommend:
-            recommend.map((item: any, index: number) => {
-              item.sort = index + 1;
-              item.artists = item.artists[0].name;
-              item.image = item.album.picUrl;
-              return item;
-            }) || [],
+          record: data.map((item: any, index: number) => {
+            item.sort = index + 1;
+            item.id = item.song.id;
+            item.name = item.song.name;
+            item.artists = item.song.ar[0].name;
+            (item.image = item.song.al.picUrl), (item.duration = item.song.dt);
+            return item;
+          }),
         },
       });
+    }
   };
   /** 播放歌曲 */
   const setCurrentMusic = async (currentMusic: any) => {
@@ -59,14 +60,18 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       currentMusic.duration,
       currentMusic.artists,
     );
+    if (music) {
+      dispatch({
+        type: 'music/update',
+        payload: {
+          currentMusic: music,
+          musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
+        },
+      });
+    } else {
+      message.warning('歌曲不存在!');
+    }
     setloading(false);
-    dispatch({
-      type: 'music/update',
-      payload: {
-        currentMusic: music,
-        musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
-      },
-    });
   };
   const columns = [
     {
@@ -124,18 +129,8 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       title: '歌手',
       dataIndex: 'artists',
       key: 'artists',
-      width: '12%',
-      ellipsis: true,
-    },
-    {
-      title: '专辑',
-      dataIndex: 'album',
-      key: 'album',
       width: '20%',
       ellipsis: true,
-      render: (album: any) => {
-        return album.name;
-      },
     },
     {
       title: '时长',
@@ -152,6 +147,30 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
             {Math.floor((duration / 1000) % 60)
               .toString()
               .padStart(2, '0')}
+          </div>
+        );
+      },
+    },
+    {
+      title: '播放次数',
+      dataIndex: 'playCount',
+      key: 'playCount',
+      width: '20%',
+      className: 'music-score',
+      render: (playCount: number, record: any) => {
+        return (
+          <div
+            style={{
+              height: 45,
+              display: 'flex',
+              alignItems: 'center',
+              width: record.score + '%',
+              background: '#9dc3ec47',
+              padding: '0 10px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span>{playCount} 次</span>
           </div>
         );
       },
@@ -195,8 +214,13 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       },
     },
   ];
+  /** query type */
+  useEffect(() => {
+    query();
+  }, [type]);
+  /** play all */
   const playAll = () => {
-    musicEntity.recommend.forEach((music: any) => {
+    musicEntity.record.forEach((music: any) => {
       if (!musicEntity.musicCache.some((item: any) => item.id === music.id)) {
         musicEntity.musicCache.push({
           id: music.id,
@@ -223,20 +247,50 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-recommend" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-recommend-header">
-        <div className="dates">
-          <div className="datas-weeks">{weekMapping[new Date().getDay()]}</div>
-          <div className="datas-days">{new Date().getDate()}</div>
-        </div>
-        <div className="app-recommend-header-tips">
-          <b>《每日歌曲推荐》依据您的音乐口味生成, 6:00 准时更新</b>
+    <div className="app-record" ref={tableRef} style={{ height: '100%' }}>
+      <div className="app-record-header">
+        <div className="app-record-header-tips">
+          <b>《听歌排行》亲爱的！这是你在网易云的第</b>
+          <span className="app-record-header-tips-days">
+            {Math.floor(
+              (new Date().getTime() - userEntity.createTime) /
+                1000 /
+                60 /
+                60 /
+                24,
+            )}
+          </span>
+          <b>天</b>
           <Button
             style={{ width: 80, margin: '0 20px' }}
             type="dashed"
             onClick={playAll}
           >
             播放全部
+          </Button>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            width: 140,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Button
+            label="本周"
+            style={{ width: 60 }}
+            type={type === 1 ? 'primary' : 'dashed'}
+            onClick={settype.bind(null, 1)}
+          >
+            本周
+          </Button>
+          <Button
+            label="所有"
+            style={{ width: 60 }}
+            type={type === 0 ? 'primary' : 'dashed'}
+            onClick={settype.bind(null, 0)}
+          >
+            所有
           </Button>
         </div>
       </div>
@@ -247,7 +301,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         checkable={false}
         pagination={false}
         loading={loading}
-        dataSource={musicEntity.recommend}
+        dataSource={musicEntity.record}
         columns={columns}
         style={{ height }}
         rows={{
@@ -262,4 +316,6 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     </div>
   );
 };
-export default connect(({ music }: any) => ({ ...music }))(Recommend);
+export default connect(({ music, user }: any) => ({ ...music, ...user }))(
+  Record,
+);
