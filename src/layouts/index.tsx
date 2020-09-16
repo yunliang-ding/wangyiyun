@@ -26,7 +26,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   };
   useEffect(() => {
     setInterval(() => {
-      settheme(new Date().getHours() > 18 ? 'dark' : 'dark'); // 更新主题定时器
+      settheme(new Date().getHours() > 18 ? 'dark' : 'light'); // 更新主题定时器
     }, 60 * 1000);
   }, []);
   return (
