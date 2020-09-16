@@ -1,0 +1,48 @@
+@primary-color: #4569d4;
+.app-liked {
+  position: relative;
+  .sui-table-tr {
+    border-bottom-color: #f8f8f8 !important;
+  }
+  .icon-shengyin {
+    color: @primary-color;
+  }
+  .icon-bofang {
+    &:hover {
+      color: @primary-color;
+    }
+  }
+  .icon-xihuan {
+    color: @primary-color;
+  }
+  .app-liked-header {
+    height: 50px;
+    display: flex;
+    padding: 0 20px;
+    padding-right: 18px;
+    align-items: center;
+    position: relative;
+    .icon-xihuan {
+      margin-right: 8px;
+    }
+    background: #ffffff8c;
+    .dates {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 50px;
+      background-color: #eee;
+      .datas-weeks,
+      .datas-days {
+        color: #666;
+        transform: scale(0.9);
+      }
+    }
+  }
+}

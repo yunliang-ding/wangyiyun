@@ -23,7 +23,7 @@ export default {
       search: [],
       record: [],
       recommend: [],
-      likelist: [],
+      liked: [],
       simi: [],
       playlist: [],
     },

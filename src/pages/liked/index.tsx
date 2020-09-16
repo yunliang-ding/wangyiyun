@@ -4,16 +4,7 @@ import { connect } from 'dva';
 import { Music } from '@/service';
 import util from '@/util';
 import './index.less';
-const weekMapping: any = {
-  '0': '周 日',
-  '1': '周 一',
-  '2': '周 二',
-  '3': '周 三',
-  '4': '周 四',
-  '5': '周 五',
-  '6': '周 六',
-};
-const Recommend = ({ musicEntity = {}, dispatch }: any) => {
+const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
   const [loading, setloading] = useState(false);
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
@@ -34,21 +25,31 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
   /** 查询推荐 */
   const query = async () => {
     setloading(true);
-    const { code, recommend } = await Music.recommend();
+    const { code, ids } = await Music.liked({
+      uid: userEntity.userId,
+    });
     setloading(false);
-    code === 200 &&
-      dispatch({
-        type: 'music/update',
-        payload: {
-          recommend:
-            recommend.map((item: any, index: number) => {
-              item.sort = index + 1;
-              item.artists = item.artists[0].name;
-              item.image = item.album.picUrl;
-              return item;
-            }) || [],
-        },
+    if (code === 200) {
+      const { code, songs } = await Music.songs({
+        ids: ids.join(','),
       });
+      code === 200 &&
+        dispatch({
+          type: 'music/update',
+          payload: {
+            liked:
+              songs.map((item: any, index: number) => {
+                item.sort = index + 1;
+                item.artists = item.ar[0].name;
+                item.album = item.al;
+                item.image = item.al.picUrl;
+                item.duration = item.dt;
+                item.mvid = item.mv;
+                return item;
+              }) || [],
+          },
+        });
+    }
   };
   /** 播放歌曲 */
   const setCurrentMusic = async (currentMusic: any) => {
@@ -172,9 +173,9 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
                 width: '100%',
               }}
             >
-              <Tooltip title="添加到喜欢" placement="bottom">
+              <Tooltip title="取消喜欢" placement="bottom">
                 <Icon
-                  type="iconfont icon-xihuan1"
+                  type="iconfont icon-xihuan"
                   size={14}
                   style={{ cursor: 'pointer', opacity: 0.8 }}
                 />
@@ -196,7 +197,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     },
   ];
   const playAll = () => {
-    musicEntity.recommend.forEach((music: any) => {
+    musicEntity.liked.forEach((music: any) => {
       if (!musicEntity.musicCache.some((item: any) => item.id === music.id)) {
         musicEntity.musicCache.push({
           id: music.id,
@@ -223,13 +224,10 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (
-    <div className="app-recommend" ref={tableRef} style={{ height: '100%' }}>
-      <div className="app-recommend-header">
-        <div className="dates">
-          <div className="datas-weeks">{weekMapping[new Date().getDay()]}</div>
-          <div className="datas-days">{new Date().getDate()}</div>
-        </div>
-        <b>《每日歌曲推荐》依据您的音乐口味生成, 6:00 准时更新</b>
+    <div className="app-liked" ref={tableRef} style={{ height: '100%' }}>
+      <div className="app-liked-header">
+        <Icon type="iconfont icon-xihuan" />
+        <b>累计喜欢 {musicEntity.liked.length} 首歌曲</b>
         <Button
           style={{ width: 80, margin: '0 20px' }}
           type="dashed"
@@ -245,7 +243,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         checkable={false}
         pagination={false}
         loading={loading}
-        dataSource={musicEntity.recommend}
+        dataSource={musicEntity.liked}
         columns={columns}
         style={{ height }}
         rows={{
@@ -260,4 +258,6 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     </div>
   );
 };
-export default connect(({ music }: any) => ({ ...music }))(Recommend);
+export default connect(({ music, user }: any) => ({ ...music, ...user }))(
+  Liked,
+);

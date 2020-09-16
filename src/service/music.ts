@@ -12,6 +12,14 @@ export default {
   async record(params: any) {
     return get(`/api/user/record`, params);
   },
+  // 喜欢歌曲
+  async liked(params: any) {
+    return get(`/api/likelist?&timestamp=${new Date().getTime()}`, params);
+  },
+  // 批量查询歌曲ids
+  async songs(params: any) {
+    return get('/api/song/detail', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,
