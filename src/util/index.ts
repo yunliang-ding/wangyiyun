@@ -14,7 +14,9 @@ export default {
       }, 800);
     }
     setTimeout(() => {
-      el.classList = '';
+      if (el) {
+        el.classList = '';
+      }
     }, 3000);
   },
 };

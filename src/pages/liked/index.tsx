@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
-import util from '@/util';
 import './index.less';
 const message = new Message({
   duration: 3,
@@ -83,6 +82,15 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
       message.error('暂无版权!');
     }
   };
+  const playMv = async (id: string) => {
+    const {
+      code,
+      data: { url },
+    } = await Music.queryMusicMv({ id });
+    if (code === 200 && url) {
+      window.open(url);
+    }
+  };
   const columns = [
     {
       title: '序号',
@@ -100,7 +108,7 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
         let playing =
           musicEntity.currentMusic && musicEntity.currentMusic.id === record.id;
         return (
-          <div style={{ position: 'relative' }}>
+          <>
             <Icon
               type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
               style={{ cursor: 'pointer' }}
@@ -108,7 +116,16 @@ const Liked = ({ userEntity = {}, musicEntity = {}, dispatch }: any) => {
                 setCurrentMusic(record, pageX, pageY);
               }}
             />
-          </div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            {record.mvid !== 0 && (
+              <Icon
+                size={20}
+                style={{ cursor: 'pointer' }}
+                type="iconfont icon-shipin1"
+                onClick={playMv.bind(null, record.mvid)}
+              />
+            )}
+          </>
         );
       },
     },

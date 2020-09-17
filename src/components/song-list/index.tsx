@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Table, Icon, Drawer } from 'site-ui';
 import { connect } from 'dva';
 import './index.less';
-const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
+const SongList = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
   const tableRef: any = useRef();
@@ -104,7 +104,7 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
     localStorage.removeItem('music');
   };
   return (
-    <div className="app-play-record">
+    <div className="app-song-list">
       <Drawer
         title="播放歌单"
         style={{
@@ -137,5 +137,5 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
   );
 };
 export default connect(({ music, user }: any) => ({ ...music, ...user }))(
-  PlayRecord,
+  SongList,
 );

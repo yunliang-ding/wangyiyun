@@ -28,6 +28,10 @@ export default {
   async search(params: any) {
     return get('/api/search', params);
   },
+  //查询mv
+  async queryMusicMv(params: any) {
+    return get('/api/mv/url', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,

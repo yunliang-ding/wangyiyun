@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
-import util from '@/util';
 import './index.less';
 const message = new Message({
   duration: 3,
@@ -85,6 +84,12 @@ const Songs = (props: any) => {
       message.error('暂无版权!');
     }
   };
+  const playMv = async (id: string) => {
+    const { code, data: { url } } = await Music.queryMusicMv({ id })
+    if (code === 200 && url) {
+      window.open(url)
+    }
+  }
   const columns = [
     {
       title: '序号',
@@ -101,7 +106,7 @@ const Songs = (props: any) => {
       render: (e: any, record: any) => {
         let playing =
           musicEntity.currentMusic && musicEntity.currentMusic.id === record.id;
-        return (
+        return <>
           <Icon
             type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
             style={{ cursor: 'pointer' }}
@@ -109,7 +114,11 @@ const Songs = (props: any) => {
               setCurrentMusic(record, pageX, pageY);
             }}
           />
-        );
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          {
+            record.mvid !== 0 && <Icon size={20} style={{ cursor: 'pointer' }} type='iconfont icon-shipin1' onClick={playMv.bind(null, record.mvid)} />
+          }
+        </>
       },
     },
     {
