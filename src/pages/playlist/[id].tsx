@@ -62,13 +62,15 @@ const Songs = (props: any) => {
     setloading(false);
   };
   /** 播放歌曲 */
-  const setCurrentMusic = async (currentMusic: any) => {
+  const setCurrentMusic = async (currentMusic: any, pageX:number, pageY:number) => {
     setloading(true);
     const music = await Music.queryMusicById(
       currentMusic.id,
       currentMusic.name,
       currentMusic.duration,
       currentMusic.artists,
+      pageX,
+      pageY
     );
     setloading(false);
     if (music) {
@@ -80,7 +82,7 @@ const Songs = (props: any) => {
         },
       });
     } else {
-      message.error('歌曲不存在!');
+      message.error('暂无版权!');
     }
   };
   const columns = [
@@ -103,8 +105,8 @@ const Songs = (props: any) => {
           <Icon
             type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
             style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setCurrentMusic(record);
+            onClick={({pageX, pageY}:any) => {
+              setCurrentMusic(record, pageX, pageY);
             }}
           />
         );

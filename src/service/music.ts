@@ -34,6 +34,8 @@ export default {
     name: string,
     duration: string,
     artists: string,
+    pageX: number,
+    pageY: number,
   ): Promise<any> {
     const musicCache = JSON.parse(localStorage.getItem('music') || '[]');
     // 1:先去磁盘查找
@@ -94,7 +96,7 @@ export default {
         };
         musicCache.push(music);
         localStorage.setItem('music', JSON.stringify(musicCache));
-        util.playAnimation();
+        util.playAnimation(pageX, pageY);
       }
     }
     localStorage.setItem('currentMusic', JSON.stringify(music));

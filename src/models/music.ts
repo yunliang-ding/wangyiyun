@@ -1,23 +1,26 @@
 const musicCache = JSON.parse(localStorage.getItem('music') || '[]');
-const currentMusic = JSON.parse(localStorage.getItem('currentMusic') || '');
+const currentMusic = JSON.parse(
+  localStorage.getItem('currentMusic') ||
+    JSON.stringify({
+      id: '',
+      src: '',
+      name: '',
+      artists: '',
+      duration: '',
+      image: '',
+      lyric: '',
+      tlyric: '',
+      progress: 0,
+      playing: true,
+      comment: [],
+    }),
+);
 export default {
   namespace: 'music',
   state: {
     musicEntity: {
       musicCache, // 播放磁盘
-      currentMusic: currentMusic || {
-        id: '',
-        src: 'http://',
-        name: '',
-        artists: '',
-        duration: '',
-        image: '',
-        lyric: '',
-        tlyric: '',
-        progress: 0,
-        playing: true,
-        comment: [],
-      },
+      currentMusic,
       search: [],
       record: [],
       recommend: [],

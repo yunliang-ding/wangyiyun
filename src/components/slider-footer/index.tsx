@@ -73,10 +73,13 @@ const SliderFooter = ({
     });
   };
   useEffect(() => {
+    console.log('currentMusic', currentMusic);
     if ($('#audio')) {
-      $('#audio').currentTime = progress / 1000; // progress
-      $('#audio').volume = voice / 100; // voice
-      playing ? $('#audio').play() : $('#audio').pause();
+      if (currentMusic.id !== '') {
+        $('#audio').currentTime = progress / 1000; // progress
+        $('#audio').volume = voice / 100; // voice
+        playing ? $('#audio').play() : $('#audio').pause();
+      }
       $('#audio').ontimeupdate = (e: any) => {
         setProgress(e.target.currentTime * 1000);
       };
@@ -84,7 +87,7 @@ const SliderFooter = ({
         playerNext();
       };
       $('#audio').onerror = () => {
-        src !== undefined && message.error('暂无版权!');
+        src !== undefined && message.error('播放异常!');
       };
     }
   }, []);
@@ -113,7 +116,6 @@ const SliderFooter = ({
         lyric = item.substr(item.indexOf(']') + 1);
       }
     });
-    console.log(lyric);
     return lyric;
   };
   const lyricArray = lyric && lyric.toString().split('#*#');
@@ -280,7 +282,12 @@ const SliderFooter = ({
           </div>
         </div>
       </div>
-      <audio style={{ display: 'none' }} src={src} autoPlay id="audio" />
+      {src !== '' && (
+        <>
+          <audio style={{ display: 'none' }} src={src} autoPlay id="audio" />
+          <img id="play-animation" src={image + '?param=60y60'} />
+        </>
+      )}
       {openRecord && <PlayRecord onClose={setopenRecord.bind(null, false)} />}
     </>
   );
