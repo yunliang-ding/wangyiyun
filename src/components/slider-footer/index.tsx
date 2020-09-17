@@ -57,7 +57,6 @@ const SliderFooter = ({
     });
   };
   const playerNext = () => {
-    console.log(currentMusic);
     let index = musicCache.findIndex((item: any) => {
       return item.id === currentMusic.id;
     });
@@ -77,6 +76,7 @@ const SliderFooter = ({
     if ($('#audio')) {
       $('#audio').currentTime = progress / 1000; // progress
       $('#audio').volume = voice / 100; // voice
+      playing ? $('#audio').play() : $('#audio').pause();
       $('#audio').ontimeupdate = (e: any) => {
         setProgress(e.target.currentTime * 1000);
       };
@@ -225,7 +225,7 @@ const SliderFooter = ({
               id="app-badge-cache"
               onClick={setopenRecord.bind(null, !openRecord)}
             >
-              {musicCache.length && (
+              {musicCache.length > 0 && (
                 <>
                   <Badge count={musicCache.length} />
                   <span

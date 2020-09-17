@@ -10,7 +10,6 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
     if (tableRef.current) {
       const { height } = tableRef.current.getBoundingClientRect();
       setheight(height);
-      console.log('height', height);
     }
     window.addEventListener('resize', () => {
       if (tableRef.current) {
@@ -95,6 +94,15 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
     });
     localStorage.setItem('music', JSON.stringify(musicCache));
   };
+  const delAll = () => {
+    dispatch({
+      type: 'music/update',
+      payload: {
+        musicCache: [],
+      },
+    });
+    localStorage.removeItem('music');
+  };
   return (
     <div className="app-play-record">
       <Drawer
@@ -108,6 +116,9 @@ const PlayRecord = ({ onClose, dispatch, userEntity, musicEntity }: any) => {
         visible
         onClose={onClose}
       >
+        <b className="del-all" onClick={delAll}>
+          全部删除
+        </b>
         <div ref={tableRef} style={{ height: '100%' }}>
           <Table
             bordered={false}
