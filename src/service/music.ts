@@ -24,6 +24,10 @@ export default {
   async playlist(params: any) {
     return get('/api/playlist/detail', params);
   },
+  // 查询关键字
+  async search(params: any) {
+    return get('/api/search', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,

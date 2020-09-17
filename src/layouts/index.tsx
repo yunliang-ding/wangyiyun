@@ -4,6 +4,7 @@ import { Layout, Menu, Icon, Input, Tooltip } from 'site-ui';
 import { Login, SliderFooter } from '@/components';
 import { User } from '@/service';
 import { history } from 'umi';
+import { Music } from '@/service';
 import './index.less';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
@@ -24,11 +25,45 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
       });
     }
   };
-  useEffect(() => {
-    setInterval(() => {
-      settheme(new Date().getHours() > 18 ? 'dark' : 'light'); // 更新主题定时器
-    }, 60 * 1000);
-  }, []);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     settheme(new Date().getHours() > 18 ? 'dark' : 'light'); // 更新主题定时器
+  //   }, 60 * 1000);
+  // }, []);
+  const [keywords, setkeywords] = useState('');
+  const searchMusic = async () => {
+    const { code, result } = await Music.search({
+      keywords,
+      offset: 0,
+      limit: 30,
+    });
+    if (code === 200) {
+      // query image url
+      const { code, songs } = await Music.songs({
+        ids: result.songs
+          ? result.songs.map((item: any) => item.id).join(',')
+          : '',
+      });
+      if (code === 200) {
+        dispatch({
+          type: 'music/update',
+          payload: {
+            search:
+              songs.map((item: any, index: number) => {
+                item.sort = index + 1;
+                item.artists = item.ar[0].name;
+                item.album = item.al;
+                item.image = item.al.picUrl;
+                item.duration = item.dt;
+                item.mvid = item.mv;
+                return item;
+              }) || [],
+          },
+        });
+      }
+    }
+    history.push('/search');
+  };
   return (
     <>
       <div
@@ -113,53 +148,56 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
           </Sider>
           <Layout>
             <Header>
-              <div className="app-layout-header-left">
+              <div className="app-header-nav">
                 <Input
+                  value={keywords}
+                  allowClear
+                  onAllowClear={setkeywords.bind(null, '')}
+                  onChange={(e: any) => {
+                    setkeywords(e.target.value);
+                  }}
+                  onPressEnter={searchMusic}
                   placeholder="查找"
                   suffix={<Icon type="iconfont icon-search" />}
                 />
               </div>
-              <div className="app-layout-header-right">
-                <div className="user">
-                  {userId ? (
-                    <Tooltip
-                      placement="bottom"
-                      title={
-                        <div>
-                          <p
-                            style={{
-                              fontSize: 12,
-                              margin: 0,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {nickname}
-                          </p>
-                          <br />
-                          <p
-                            style={{
-                              fontSize: 12,
-                              margin: 0,
-                              cursor: 'pointer',
-                            }}
-                            onClick={logOut}
-                          >
-                            退出
-                          </p>
-                        </div>
-                      }
-                    >
-                      <img src={avatarUrl} />
-                    </Tooltip>
-                  ) : (
-                    <Icon
-                      type="suiconuser"
-                      size={20}
-                      onClick={setopenlogin.bind(null, true)}
-                    />
-                  )}
-                </div>
+              <div className="app-header-nav">
+                <Tooltip title="主题切换" placement="bottom" theme={theme}>
+                  <Icon
+                    type={
+                      theme === 'dark'
+                        ? 'iconfont icon-icon_huabanfuben'
+                        : 'iconfont icon-baitianmoshimingliangmoshi'
+                    }
+                    size={20}
+                    onClick={settheme.bind(
+                      null,
+                      theme === 'dark' ? 'light' : 'dark',
+                    )}
+                  />
+                </Tooltip>
               </div>
+              {userId ? (
+                <>
+                  <div className="app-header-nav">
+                    <img src={avatarUrl} />
+                    <span style={{ marginLeft: 10 }}>{nickname}</span>
+                    <Tooltip title="退出" placement="bottom" theme={theme}>
+                      <span onClick={logOut} style={{ marginLeft: 12 }}>
+                        <Icon type="iconfont icon-log-out" size={20} />
+                      </span>
+                    </Tooltip>
+                  </div>
+                </>
+              ) : (
+                <div className="app-header-nav">
+                  <Icon
+                    type="iconfont icon-yonghu"
+                    size={20}
+                    onClick={setopenlogin.bind(null, true)}
+                  />
+                </div>
+              )}
             </Header>
             <Content>
               <div className="main">{children}</div>
