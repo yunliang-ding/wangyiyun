@@ -73,7 +73,6 @@ const SliderFooter = ({
     });
   };
   useEffect(() => {
-    console.log('currentMusic', currentMusic);
     if ($('#audio')) {
       if (currentMusic.id !== '') {
         $('#audio').currentTime = progress / 1000; // progress
@@ -172,7 +171,7 @@ const SliderFooter = ({
                   }}
                 >
                   {name || '...'}
-                </span>{' '}
+                </span>
                 &nbsp;
                 <span style={{ fontSize: 12 }}>{artists || '...'}</span>
               </div>
