@@ -236,7 +236,6 @@ const Songs = (props: any) => {
         musicCache: musicEntity.musicCache,
       },
     });
-    util.playAnimation();
     localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
   };
   return (

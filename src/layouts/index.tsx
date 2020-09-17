@@ -180,15 +180,30 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
               {userId ? (
                 <>
                   <div className="app-header-nav">
-                    <Tooltip title="退出" placement="bottom" theme={theme}>
-                      <span onClick={logOut} style={{ marginLeft: 12 }}>
-                        <Icon type="iconfont icon-log-out" size={20} />
-                      </span>
-                    </Tooltip>
+                    <img src={avatarUrl} />
+                    <span style={{ marginLeft: 10, fontSize: 12 }}>
+                      {nickname}
+                    </span>
                   </div>
                   <div className="app-header-nav">
-                    <img src={avatarUrl} />
-                    <span style={{ marginLeft: 10 }}>{nickname}</span>
+                    <Tooltip
+                      title={
+                        <span
+                          onClick={logOut}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          退出
+                        </span>
+                      }
+                      placement="bottom"
+                      theme={theme}
+                    >
+                      <Icon type="iconfont icon-shezhi1" size={20} />
+                    </Tooltip>
                   </div>
                 </>
               ) : (
