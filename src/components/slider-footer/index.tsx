@@ -13,7 +13,7 @@ const SliderFooter = ({
   progressEntity,
   dispatch,
 }: any) => {
-  const { duration, src, image, artists, name } = currentMusic || {};
+  const { duration, src, image, artists, name, lyric } = currentMusic || {};
   const { progress, playing, voice } = progressEntity || {};
   const [openRecord, setopenRecord] = useState(false);
   Window.progressEntity = progressEntity;
@@ -88,6 +88,35 @@ const SliderFooter = ({
       };
     }
   }, []);
+  /** 歌词 */
+  const renderLyric = (lyricArray: any, progress: number) => {
+    let lyric = '';
+    lyricArray.map((item: any, index: number, arr: any) => {
+      let currentTime = item
+        .substr(item.indexOf('[') + 1, item.indexOf('.') - 1)
+        .split(':') || [0, 0];
+      let second =
+        (Number.parseInt(currentTime[0]) * 60 +
+          Number.parseInt(currentTime[1])) *
+        1000;
+      let nextTime = (arr[index + 1] &&
+        arr[index + 1]
+          .substr(
+            arr[index + 1].indexOf('[') + 1,
+            arr[index + 1].indexOf('.') - 1,
+          )
+          .split(':')) || [0, 0];
+      let secondNext =
+        (Number.parseInt(nextTime[0]) * 60 + Number.parseInt(nextTime[1])) *
+        1000;
+      if (second < progress && progress < secondNext) {
+        lyric = item.substr(item.indexOf(']') + 1);
+      }
+    });
+    console.log(lyric);
+    return lyric;
+  };
+  const lyricArray = lyric && lyric.toString().split('#*#');
   return (
     <>
       <div className="app-footer-slider">
@@ -166,6 +195,9 @@ const SliderFooter = ({
                       .toString()
                       .padStart(2, '0')}
                   </span>
+                </span>
+                <span className="app-footer-song-lyrics">
+                  {lyricArray && renderLyric(lyricArray, progress)}
                 </span>
               </div>
             </div>
