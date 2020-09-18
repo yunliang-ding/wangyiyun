@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
+import { Table, Icon, Tooltip, Button } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
 import './index.less';
-const message = new Message({
-  duration: 3,
-});
+import util from '@/util'
 const Songs = (props: any) => {
-  const { userEntity = {}, musicEntity = {}, dispatch }: any = props
-  const [loading, setloading] = useState(false);
+  const { uiEntity = {}, musicEntity = {}, dispatch }: any = props
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
   const tableRef: any = useRef();
@@ -26,12 +23,12 @@ const Songs = (props: any) => {
     });
   }, []);
   /** update */
-  useEffect(()=>{
+  useEffect(() => {
     query();
   }, [props.match.params.id])
   /** 查询推荐 */
   const query = async () => {
-    setloading(true);
+    util.setloading(true, dispatch);
     const { code, privileges, playlist } = await Music.playlist({
       id: props.match.params.id,
     });
@@ -58,38 +55,8 @@ const Songs = (props: any) => {
           },
         });
     }
-    setloading(false);
+    util.setloading(false, dispatch);
   };
-  /** 播放歌曲 */
-  const setCurrentMusic = async (currentMusic: any, pageX:number, pageY:number) => {
-    setloading(true);
-    const music = await Music.queryMusicById(
-      currentMusic.id,
-      currentMusic.name,
-      currentMusic.duration,
-      currentMusic.artists,
-      pageX,
-      pageY
-    );
-    setloading(false);
-    if (music) {
-      dispatch({
-        type: 'music/update',
-        payload: {
-          currentMusic: music,
-          musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
-        },
-      });
-    } else {
-      message.error('暂无版权!');
-    }
-  };
-  const playMv = async (id: string) => {
-    const { code, data: { url } } = await Music.queryMusicMv({ id })
-    if (code === 200 && url) {
-      window.open(url)
-    }
-  }
   const columns = [
     {
       title: '序号',
@@ -110,13 +77,13 @@ const Songs = (props: any) => {
           <Icon
             type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
             style={{ cursor: 'pointer' }}
-            onClick={({pageX, pageY}:any) => {
-              setCurrentMusic(record, pageX, pageY);
+            onClick={({ pageX, pageY }: any) => {
+              util.setCurrentMusic(record, pageX, pageY, dispatch)
             }}
           />
           &nbsp;&nbsp;&nbsp;&nbsp;
           {
-            record.mvid !== 0 && <Icon size={20} style={{ cursor: 'pointer' }} type='iconfont icon-shipin1' onClick={playMv.bind(null, record.mvid)} />
+            record.mvid !== 0 && <Icon size={20} style={{ cursor: 'pointer' }} type='iconfont icon-shipin1' onClick={util.playMv.bind(null, record.mvid)} />
           }
         </>
       },
@@ -209,6 +176,7 @@ const Songs = (props: any) => {
                 type="iconfont icon-shoucang"
                 size={14}
                 style={{ cursor: 'pointer', opacity: 0.8 }}
+                onClick={util.collection.bind(null, dispatch, { openCollection: true, collectionId: record.id })}
               />
               <Icon
                 type="iconfont icon-xiazai1"
@@ -221,32 +189,6 @@ const Songs = (props: any) => {
       },
     },
   ];
-  const playAll = () => {
-    musicEntity.playlist.data.forEach((music: any) => {
-      if (!musicEntity.musicCache.some((item: any) => item.id === music.id)) {
-        musicEntity.musicCache.push({
-          id: music.id,
-          src: `https://music.163.com/song/media/outer/url?id=${music.id}`,
-          name: music.name,
-          duration: music.duration,
-          artists: music.artists,
-          image: music.image,
-          lyric: '',
-          tlyric: '',
-          progress: 0,
-          playing: true,
-          comment: [],
-        });
-      }
-    });
-    dispatch({
-      type: 'music/update',
-      payload: {
-        musicCache: musicEntity.musicCache,
-      },
-    });
-    localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
-  };
   return (
     <div className="app-playlist app-content-chidren" ref={tableRef} style={{ height: '100%' }}>
       <div className="app-playlist-header app-content-chidren-header">
@@ -267,7 +209,7 @@ const Songs = (props: any) => {
             <Button
               style={{ width: 80, margin: '0 20px' }}
               type="dashed"
-              onClick={playAll}
+              onClick={util.playAll.bind(null, musicEntity.playlist.data, musicEntity, dispatch)}
             >
               播放全部
         </Button>
@@ -280,7 +222,7 @@ const Songs = (props: any) => {
         onCheck={false}
         checkable={false}
         pagination={false}
-        loading={loading}
+        loading={uiEntity.loading}
         dataSource={musicEntity.playlist.data}
         columns={columns}
         style={{ height }}
@@ -296,6 +238,6 @@ const Songs = (props: any) => {
     </div>
   );
 };
-export default connect(({ music, user }: any) => ({ ...music, ...user }))(
+export default connect(({ music, user, ui }: any) => ({ ...music, ...user, ...ui }))(
   Songs,
 );

@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon, Tooltip, Message } from 'site-ui';
+import { Table, Icon, Tooltip } from 'site-ui';
 import { connect } from 'dva';
-import { Music } from '@/service';
 import './index.less';
-const message = new Message({
-  duration: 3,
-});
-const Search = ({ musicEntity = {}, dispatch }: any) => {
-  const [loading, setloading] = useState(false);
+import util from '@/util';
+const Search = ({ uiEntity, musicEntity = {}, dispatch }: any) => {
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
   const tableRef: any = useRef();
@@ -23,43 +19,6 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
       }
     });
   }, []);
-  /** 播放歌曲 */
-  const setCurrentMusic = async (
-    currentMusic: any,
-    pageX: number,
-    pageY: number,
-  ) => {
-    setloading(true);
-    const music = await Music.queryMusicById(
-      currentMusic.id,
-      currentMusic.name,
-      currentMusic.duration,
-      currentMusic.artists,
-      pageX,
-      pageY,
-    );
-    setloading(false);
-    if (music) {
-      dispatch({
-        type: 'music/update',
-        payload: {
-          currentMusic: music,
-          musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
-        },
-      });
-    } else {
-      message.error('暂无版权!');
-    }
-  };
-  const playMv = async (id: string) => {
-    const {
-      code,
-      data: { url },
-    } = await Music.queryMusicMv({ id });
-    if (code === 200 && url) {
-      window.open(url);
-    }
-  };
   const columns = [
     {
       title: '序号',
@@ -82,7 +41,7 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
               type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
               style={{ cursor: 'pointer' }}
               onClick={({ pageX, pageY }: any) => {
-                setCurrentMusic(record, pageX, pageY);
+                util.setCurrentMusic(record, pageX, pageY, dispatch);
               }}
             />
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -91,7 +50,7 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
                 size={20}
                 style={{ cursor: 'pointer' }}
                 type="iconfont icon-shipin1"
-                onClick={playMv.bind(null, record.mvid)}
+                onClick={util.playMv.bind(null, record.mvid)}
               />
             )}
           </>
@@ -186,6 +145,10 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
                 type="iconfont icon-shoucang"
                 size={14}
                 style={{ cursor: 'pointer', opacity: 0.8 }}
+                onClick={util.collection.bind(null, dispatch, {
+                  openCollection: true,
+                  collectionId: record.id,
+                })}
               />
               <Icon
                 type="iconfont icon-xiazai1"
@@ -219,7 +182,7 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
         onCheck={false}
         checkable={false}
         pagination={false}
-        loading={loading}
+        loading={uiEntity.loading}
         dataSource={musicEntity.search}
         columns={columns}
         style={{ height }}
@@ -235,4 +198,4 @@ const Search = ({ musicEntity = {}, dispatch }: any) => {
     </div>
   );
 };
-export default connect(({ music }: any) => ({ ...music }))(Search);
+export default connect(({ music, ui }: any) => ({ ...music, ...ui }))(Search);

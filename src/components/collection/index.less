@@ -1,0 +1,55 @@
+@primary-color: #4569d4;
+.app-collection {
+  height: 100%;
+  .icon-shengyin {
+    color: @primary-color;
+  }
+  .sui-table-tr {
+    border: 0 !important;
+  }
+  .sui-drawer-body {
+    padding: 0;
+    position: relative;
+  }
+  .sui-drawer-header {
+    border-bottom: 0;
+    background-color: #f5f5fb;
+  }
+  .app-collection-tools {
+    span {
+      font-size: 12px;
+    }
+    .app-collection-tools-new {
+      color: @primary-color;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    border: 1px solid #f2f2f2;
+    background: #f2f2f2;
+    .iconfont {
+      cursor: pointer;
+    }
+  }
+  .app-collection-body {
+    width: 100%;
+    height: calc(~'100% - 40px');
+    background: #f8f8f8;
+    overflow: auto;
+    .app-collection-item:hover {
+      background: #eee;
+    }
+    .app-collection-item {
+      display: flex;
+      padding: 10px 20px;
+      cursor: pointer;
+      img {
+        width: 40px;
+      }
+    }
+  }
+}

@@ -32,6 +32,10 @@ export default {
   async queryMusicMv(params: any) {
     return get('/api/mv/url', params);
   },
+  // 收藏歌曲
+  async tracksPlayList(params: any) {
+    return get('/api/playlist/tracks', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,

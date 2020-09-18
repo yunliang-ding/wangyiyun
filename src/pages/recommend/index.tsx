@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Icon, Tooltip, Button, Message } from 'site-ui';
+import { Table, Icon, Tooltip, Button } from 'site-ui';
 import { connect } from 'dva';
 import { Music } from '@/service';
 import './index.less';
-const message = new Message({
-  duration: 3,
-});
+import util from '@/util';
 const weekMapping: any = {
   '0': '周 日',
   '1': '周 一',
@@ -15,8 +13,7 @@ const weekMapping: any = {
   '5': '周 五',
   '6': '周 六',
 };
-const Recommend = ({ musicEntity = {}, dispatch }: any) => {
-  const [loading, setloading] = useState(false);
+const Recommend = ({ uiEntity, musicEntity = {}, dispatch }: any) => {
   const [height, setheight]: any = useState(false);
   const [hoverRow, sethoverRow] = useState('');
   const tableRef: any = useRef();
@@ -35,9 +32,9 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
   }, []);
   /** 查询推荐 */
   const query = async () => {
-    setloading(true);
+    util.setloading(true, dispatch);
     const { code, recommend } = await Music.recommend();
-    setloading(false);
+    util.setloading(false, dispatch);
     code === 200 &&
       dispatch({
         type: 'music/update',
@@ -51,43 +48,6 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
             }) || [],
         },
       });
-  };
-  /** 播放歌曲 */
-  const setCurrentMusic = async (
-    currentMusic: any,
-    pageX: number,
-    pageY: number,
-  ) => {
-    setloading(true);
-    const music = await Music.queryMusicById(
-      currentMusic.id,
-      currentMusic.name,
-      currentMusic.duration,
-      currentMusic.artists,
-      pageX,
-      pageY,
-    );
-    setloading(false);
-    if (music) {
-      dispatch({
-        type: 'music/update',
-        payload: {
-          currentMusic: music,
-          musicCache: JSON.parse(localStorage.getItem('music') || '[]'),
-        },
-      });
-    } else {
-      message.error('暂无版权!');
-    }
-  };
-  const playMv = async (id: string) => {
-    const {
-      code,
-      data: { url },
-    } = await Music.queryMusicMv({ id });
-    if (code === 200 && url) {
-      window.open(url);
-    }
   };
   const columns = [
     {
@@ -111,7 +71,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
               type={playing ? 'iconfont icon-shengyin' : 'iconfont icon-bofang'}
               style={{ cursor: 'pointer' }}
               onClick={({ pageX, pageY }: any) => {
-                setCurrentMusic(record, pageX, pageY);
+                util.setCurrentMusic(record, pageX, pageY, dispatch);
               }}
             />
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -120,7 +80,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
                 size={20}
                 style={{ cursor: 'pointer' }}
                 type="iconfont icon-shipin1"
-                onClick={playMv.bind(null, record.mvid)}
+                onClick={util.playMv.bind(null, record.mvid)}
               />
             )}
           </>
@@ -215,6 +175,10 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
                 type="iconfont icon-shoucang"
                 size={14}
                 style={{ cursor: 'pointer', opacity: 0.8 }}
+                onClick={util.collection.bind(null, dispatch, {
+                  openCollection: true,
+                  collectionId: record.id,
+                })}
               />
               <Icon
                 type="iconfont icon-xiazai1"
@@ -227,32 +191,6 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
       },
     },
   ];
-  const playAll = () => {
-    musicEntity.recommend.forEach((music: any) => {
-      if (!musicEntity.musicCache.some((item: any) => item.id === music.id)) {
-        musicEntity.musicCache.push({
-          id: music.id,
-          src: `https://music.163.com/song/media/outer/url?id=${music.id}`,
-          name: music.name,
-          duration: music.duration,
-          artists: music.artists,
-          image: music.image,
-          lyric: '',
-          tlyric: '',
-          progress: 0,
-          playing: true,
-          comment: [],
-        });
-      }
-    });
-    dispatch({
-      type: 'music/update',
-      payload: {
-        musicCache: musicEntity.musicCache,
-      },
-    });
-    localStorage.setItem('music', JSON.stringify(musicEntity.musicCache));
-  };
   return (
     <div
       className="app-recommend app-content-chidren"
@@ -270,7 +208,12 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         <Button
           style={{ width: 80, margin: '0 20px' }}
           type="dashed"
-          onClick={playAll}
+          onClick={util.playAll.bind(
+            null,
+            musicEntity.recommend,
+            musicEntity,
+            dispatch,
+          )}
         >
           播放全部
         </Button>
@@ -281,7 +224,7 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
         onCheck={false}
         checkable={false}
         pagination={false}
-        loading={loading}
+        loading={uiEntity.loading}
         dataSource={musicEntity.recommend}
         columns={columns}
         style={{ height }}
@@ -297,4 +240,6 @@ const Recommend = ({ musicEntity = {}, dispatch }: any) => {
     </div>
   );
 };
-export default connect(({ music }: any) => ({ ...music }))(Recommend);
+export default connect(({ music, ui }: any) => ({ ...music, ...ui }))(
+  Recommend,
+);

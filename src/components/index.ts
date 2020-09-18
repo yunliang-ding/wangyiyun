@@ -1,4 +1,5 @@
 import Login from './login';
 import SliderFooter from './slider-footer';
 import PlayRecord from './play-reocrd';
-export { Login, SliderFooter, PlayRecord };
+import Collection from './collection';
+export { Login, SliderFooter, PlayRecord, Collection };

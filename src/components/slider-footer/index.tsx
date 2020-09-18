@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, Message, Slider, Tooltip } from 'site-ui';
 import { connect } from 'dva';
-import { PlayRecord } from '@/components';
+import { PlayRecord, Collection } from '@/components';
 import './index.less';
 const Window: any = window;
 const message = new Message({
@@ -10,6 +10,7 @@ const message = new Message({
 const $: any = document.querySelector.bind(document);
 const SliderFooter = ({
   musicEntity: { currentMusic, musicCache },
+  uiEntity: { openCollection },
   progressEntity,
   dispatch,
 }: any) => {
@@ -69,6 +70,14 @@ const SliderFooter = ({
       type: 'music/update',
       payload: {
         currentMusic: music,
+      },
+    });
+  };
+  const closeCollection = () => {
+    dispatch({
+      type: 'ui/update',
+      payload: {
+        openCollection: false,
       },
     });
   };
@@ -288,10 +297,12 @@ const SliderFooter = ({
         </>
       )}
       {openRecord && <PlayRecord onClose={setopenRecord.bind(null, false)} />}
+      {openCollection && <Collection onClose={closeCollection} />}
     </>
   );
 };
-export default connect(({ music, progress }: any) => ({
+export default connect(({ music, progress, ui }: any) => ({
   ...music,
   ...progress,
+  ...ui,
 }))(SliderFooter);

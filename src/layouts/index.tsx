@@ -4,8 +4,8 @@ import { Layout, Menu, Icon, Input, Tooltip } from 'site-ui';
 import { Login, SliderFooter } from '@/components';
 import { User } from '@/service';
 import { history } from 'umi';
-import { Music } from '@/service';
 import './index.less';
+import util from '@/util';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
 const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
@@ -32,36 +32,7 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   // }, []);
   const [keywords, setkeywords] = useState('');
   const searchMusic = async () => {
-    const { code, result } = await Music.search({
-      keywords,
-      offset: 0,
-      limit: 30,
-    });
-    if (code === 200) {
-      // query image url
-      const { code, songs } = await Music.songs({
-        ids: result.songs
-          ? result.songs.map((item: any) => item.id).join(',')
-          : '',
-      });
-      if (code === 200) {
-        dispatch({
-          type: 'music/update',
-          payload: {
-            search:
-              songs.map((item: any, index: number) => {
-                item.sort = index + 1;
-                item.artists = item.ar[0].name;
-                item.album = item.al;
-                item.image = item.al.picUrl;
-                item.duration = item.dt;
-                item.mvid = item.mv;
-                return item;
-              }) || [],
-          },
-        });
-      }
-    }
+    await util.searchMusic(keywords, dispatch);
     history.push('/search');
   };
   return (
