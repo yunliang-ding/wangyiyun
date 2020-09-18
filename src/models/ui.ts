@@ -4,6 +4,7 @@ export default {
     uiEntity: {
       openCollection: false,
       openSongDetail: false,
+      openLogin: false,
       collectionId: '',
     },
   },

@@ -8,13 +8,12 @@ import './index.less';
 import util from '@/util';
 const { Header, Sider, Content, Footer }: any = Layout;
 const { SubMenu, Item }: any = Menu;
-const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
+const AppLayout = ({ uiEntity, userEntity = {}, dispatch, children }: any) => {
   const { avatarUrl, nickname, userId } = userEntity;
   const [collapsed, setcollapsed]: any = useState();
   const [theme, settheme]: any = useState(
     new Date().getHours() > 18 || new Date().getHours() < 6 ? 'dark' : 'light',
   );
-  const [openlogin, setopenlogin]: any = useState(false);
   const logOut = async () => {
     const { code } = await User.logOut({});
     if (code === 200) {
@@ -34,6 +33,14 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
   const searchMusic = async () => {
     await util.searchMusic(keywords, dispatch);
     history.push('/search');
+  };
+  const setopenlogin = (openLogin: boolean) => {
+    dispatch({
+      type: 'ui/update',
+      payload: {
+        openLogin,
+      },
+    });
   };
   return (
     <>
@@ -196,12 +203,14 @@ const AppLayout = ({ userEntity = {}, dispatch, children }: any) => {
           </Layout>
         </Layout>
       </div>
-      {openlogin && (
+      {uiEntity.openLogin && (
         <Login onClose={setopenlogin.bind(null, false)} theme={theme} />
       )}
     </>
   );
 };
-export default connect(({ user, music }: any) => ({ ...user, ...music }))(
-  AppLayout,
-);
+export default connect(({ user, music, ui }: any) => ({
+  ...user,
+  ...music,
+  ...ui,
+}))(AppLayout);

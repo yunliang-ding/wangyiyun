@@ -65,6 +65,7 @@ export default {
         payload: Window.progressEntity,
       });
       sessionStorage.setItem('progress', JSON.stringify(Window.progressEntity));
+      $('title').innerText = music.name;
     } else {
       message.error('暂无版权!');
     }
