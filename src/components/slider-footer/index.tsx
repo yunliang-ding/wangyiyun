@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, Message, Slider, Tooltip } from 'site-ui';
 import { connect } from 'dva';
-import { PlayRecord, Collection } from '@/components';
+import { PlayRecord, Collection, SongDetail } from '@/components';
 import './index.less';
 const Window: any = window;
 const message = new Message({
@@ -10,7 +10,7 @@ const message = new Message({
 const $: any = document.querySelector.bind(document);
 const SliderFooter = ({
   musicEntity: { currentMusic, musicCache },
-  uiEntity: { openCollection },
+  uiEntity: { openCollection, openSongDetail },
   progressEntity,
   dispatch,
 }: any) => {
@@ -78,6 +78,14 @@ const SliderFooter = ({
       type: 'ui/update',
       payload: {
         openCollection: false,
+      },
+    });
+  };
+  const setopenSongDetail = (openSongDetail: boolean) => {
+    dispatch({
+      type: 'ui/update',
+      payload: {
+        openSongDetail,
       },
     });
   };
@@ -175,9 +183,7 @@ const SliderFooter = ({
               <div className="music-tools-name">
                 <span
                   style={{ fontSize: 14, color: '#545454' }}
-                  onClick={() => {
-                    // name && (window.location.hash = `/app/music.163.song/${id}`)
-                  }}
+                  onClick={setopenSongDetail.bind(null, true)}
                 >
                   {name || '...'}
                 </span>
@@ -298,6 +304,9 @@ const SliderFooter = ({
       )}
       {openRecord && <PlayRecord onClose={setopenRecord.bind(null, false)} />}
       {openCollection && <Collection onClose={closeCollection} />}
+      {openSongDetail && (
+        <SongDetail onClose={setopenSongDetail.bind(null, false)} />
+      )}
     </>
   );
 };

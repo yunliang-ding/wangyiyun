@@ -3,6 +3,7 @@ export default {
   state: {
     uiEntity: {
       openCollection: false,
+      openSongDetail: false,
       collectionId: '',
     },
   },
