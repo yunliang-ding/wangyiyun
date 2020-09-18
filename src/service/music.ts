@@ -42,8 +42,8 @@ export default {
     name: string,
     duration: string,
     artists: string,
-    pageX: number,
-    pageY: number,
+    pageX?: number,
+    pageY?: number,
   ): Promise<any> {
     const musicCache = JSON.parse(localStorage.getItem('music') || '[]');
     // 1:先去磁盘查找
@@ -85,6 +85,7 @@ export default {
         music = {
           id,
           src: `https://music.163.com/song/media/outer/url?id=${id}`,
+          url: data[0].url,
           name,
           duration,
           artists,
@@ -104,7 +105,7 @@ export default {
         };
         musicCache.push(music);
         localStorage.setItem('music', JSON.stringify(musicCache));
-        util.playAnimation(pageX, pageY);
+        pageY && pageX && util.playAnimation(pageX, pageY);
       }
     }
     localStorage.setItem('currentMusic', JSON.stringify(music));

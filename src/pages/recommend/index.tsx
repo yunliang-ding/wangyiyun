@@ -184,6 +184,7 @@ const Recommend = ({ uiEntity, musicEntity = {}, dispatch }: any) => {
                 type="iconfont icon-xiazai1"
                 size={14}
                 style={{ cursor: 'pointer', opacity: 0.8 }}
+                onClick={util.downloadMp3.bind(null, record)}
               />
             </div>
           )

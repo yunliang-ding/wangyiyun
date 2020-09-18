@@ -4,6 +4,7 @@ const currentMusic = JSON.parse(
     JSON.stringify({
       id: '',
       src: '',
+      url: '',
       name: '',
       artists: '',
       duration: '',
