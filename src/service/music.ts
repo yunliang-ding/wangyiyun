@@ -36,6 +36,10 @@ export default {
   async tracksPlayList(params: any) {
     return get('/api/playlist/tracks', params);
   },
+  // 歌曲评论
+  async queryCommentById(params: any) {
+    return get('/api/comment/music', params);
+  },
   // 查找指定音乐
   async queryMusicById(
     id: string,
