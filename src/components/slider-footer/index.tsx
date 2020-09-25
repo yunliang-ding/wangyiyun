@@ -48,7 +48,7 @@ const SliderFooter = ({
     let index = musicCache.findIndex((item: any) => {
       return item.id === currentMusic.id;
     });
-    const music = musicCache[index > 0 ? index - 1 : 0];
+    const music = musicCache[index > 0 ? index - 1 : musicCache.length - 1];
     localStorage.setItem('currentMusic', JSON.stringify(music));
     dispatch({
       type: 'music/update',
@@ -61,10 +61,7 @@ const SliderFooter = ({
     let index = musicCache.findIndex((item: any) => {
       return item.id === currentMusic.id;
     });
-    const music =
-      musicCache[
-        index < musicCache.length - 1 ? index + 1 : musicCache.length - 1
-      ];
+    const music = musicCache[index < musicCache.length - 1 ? index + 1 : 0];
     localStorage.setItem('currentMusic', JSON.stringify(music));
     dispatch({
       type: 'music/update',
